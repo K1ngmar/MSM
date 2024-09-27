@@ -1,6 +1,6 @@
 
-#ifndef PROJECT_NAME_H
-# define PROJECT_NAME_H
+#ifndef FSM_H
+# define FSM_H
 
 #include <stdbool.h>
 

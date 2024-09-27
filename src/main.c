@@ -1,5 +1,5 @@
 
-#include "{PROJECT_NAME}/{PROJECT_NAME}.h"
+#include "FSM/FSM.h"
 #include <libkm/io/printf.h>
 
 int main(int argc, char** argv)

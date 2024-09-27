@@ -1,5 +1,5 @@
 
-#include "{PROJECT_NAME}/{PROJECT_NAME}.h"
+#include "FSM/FSM.h"
 
 bool some_function(bool val)
 {
