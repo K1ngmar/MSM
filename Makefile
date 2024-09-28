@@ -8,19 +8,16 @@ all: $(NAME)
 
 # Compilation
 
-$(NAME): $(LIBKM) $(OBJ)
-	@echo "$(COLOR_GREEN)Creating $(NAME) executable...$(COLOR_RESET)"
-	@$(CC) -o $@ $(OBJ) $(LIBKM_LIB) $(LFLAGS) $(CFLAGS)
+$(NAME): $(OBJ)
+	@echo "$(COLOR_GREEN)Creating $(NAME) Library...$(COLOR_RESET)"
+	@ar rcs $(NAME) $(OBJ)
 
 -include $(DEPENDENCIES)
 
 $(OBJ): $(ODIR)/%.o: $(SDIR)/%.c
 	@mkdir -p $(@D)
 	@echo "$(COLOR_LBLUE)Compiling...	$(COLOR_BLUE)$<$(COLOR_RESET)"
-	@$(CC) -c -o $@ $< $(CFLAGS) -MMD -MP $(IFLAGS)
-
-$(LIBKM):
-	@$(MAKE) -C $(LIBKM_LOCATION)
+	@$(CXX) -c -o $@ $< $(CFLAGS) -MMD -MP $(IFLAGS)
 
 # Clean up
 
@@ -48,7 +45,7 @@ re: fclean
 $(UNIT_DIR)/bin/%: $(UNIT_DIR)/%.c
 	@mkdir -p $(UNIT_DIR)/bin
 	@echo "$(COLOR_LBLUE)Compiling tests... $(COLOR_BLUE)$<$(COLOR_RESET)"
-	@$(CC) $(CFLAGS) $(IFLAGS) $< $(UNIT_OBJ) -o $@ -lcriterion $(LIBKM_LIB)
+	@$(CXX) $(CFLAGS) $(IFLAGS) $< $(UNIT_OBJ) -o $@ -lcriterion $(LIBKM_LIB)
 
 unit_test_build: $(NAME) $(UNIT_DIR) $(UNIT_BIN)
 
