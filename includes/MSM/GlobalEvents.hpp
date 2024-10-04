@@ -44,21 +44,7 @@ struct Idle : GlobalState {
 
 struct none {};
 
-template<class OriginState, class Event, class DestinationState, class TransitionFunction, class Guard>
-using row = std::tuple<OriginState, Event, DestinationState, TransitionFunction, Guard>;
 
-template<class ...Rows>
-class TransitionTable
-{
-	std::tuple<Rows...> table;
-	const size_t numberOfTransitions = std::tuple_size<std::tuple<Rows...>
-
-	TransitionTable()
-	{
-		for (size_t i = 0; i < std::tuple_size(table))
-	}
-
-}
 
 TransitionTable<
 
