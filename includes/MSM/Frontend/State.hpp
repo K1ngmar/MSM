@@ -12,14 +12,16 @@ namespace MSM
         /*!
          * @brief Function to execute on entry of state.
         */
-        template<class FSM, State OriginState, Event IncommingEvent, State DestinationState, Action TransitionAction, Action TransitionGuard>
-        virtual on_entry(FSM& fsm, const OriginState& ost, const IncommingEvent& evt, const DestinationState& dst, const TransitionAction& ta, const TransitionGuard& tg) = 0;
+        template<EventType Event, StateMachineType StateMachine>
+        virtual on_entry(const Event& evt, StateMachine& fsm)
+        {};
 
         /*!
          * @brief Function to execute on exit of state.
         */
-        template<class FSM, State OriginState, Event IncommingEvent, State DestinationState, Action TransitionAction, Action TransitionGuard>
-        virtual on_exit(FSM& fsm, const OriginState& ost, const IncommingEvent& evt, const DestinationState& dst, const TransitionAction& ta, const TransitionGuard& tg) = 0;
+        template<EventType Event, StateMachineType StateMachine>
+        virtual on_exit(const Event& evt, StateMachine& fsm)
+        {};
     };
 
 } /* End namespace MSM */

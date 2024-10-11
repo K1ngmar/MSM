@@ -1,57 +1,124 @@
 #pragma once
 
-#include "Frontend/State.hpp"
-#include "Frontend/State.hpp"
-#include "Frontend/DestinationState.hpp"
-#include "Frontend/TransitionAction.hpp"
-#include "Frontend/TransitionGuard.hpp"
-
-/*!
- * @brief Transition Table Row defines how to perform a State transtion based on an incomming event.
- * @tparam OriginState
- * @tparam IncommingEvent
- * @tparam DestinationState
- * @tparam TransitionAction Action performed in between the transtions of states.
- * @tparam TransitionGuard Transition is only executed if the guard is satisfied.
-*/
-template<State OriginState, Event IncommingEvent, State DestinationState, Action TransitionAction, Guard TransitionGuard>
-class TTRow
+namespace MSM
 {
-    std::shared_ptr<FSM> fsm; /*!< The state machine. */
 
-    OriginState ost; /*!< -. */
-    DestinationState dst; /*!< -. */
-    TransitionAction ta; /*!< -. */
-    TransitionGuard tg; /*!< -. */
-
-public:
-
+namespace Front
+{
     /*!
-     * @brief -.
+     * @brief Special type to use when you want to use a slot for the transition.
     */
-    TTRow(std::shared_ptr<FSM> fsm_) : fsm(fsm_)
-
+    struct None
     {
+    };
 
-    }
+    template<class ...T>
+    struct TTRow{};
 
-    /*!
-     * @brief -.
-    */
-    bool CanPerformTransition() const
+    // Row<Origin, Event, Target, None, None>
+    template<class OriginState, class Event, class TargetState, class Action, class Guard>
+    struct TTRow<OriginState, Event, TargetState, None, None>
     {
-        return transitionGuard();
-    }
+        using Row_Type_Tag = Normal_Transition_Tag;
+    };
 
-    /*!
-     * @brief Calling this will perform the state transition.
-    */
-    void ProcessEvent(const IncommingEvent& incommingEvent)
+    // Row<Origin, Event, Target, Action, None>
+    template<class OriginState, class Event, class TargetState, class Action, class Guard>
+    struct TTRow<OriginState, Event, TargetState, Action, None>
     {
-        originState.on_exit(originState, );
-        transitionAction();
-        destinationState.on_entry();
-    }
+        using Row_Type_Tag = Normal_Transition_With_Action_Tag;
 
-};
+        template <class Fsm>
+        static void ExecuteAction(Fsm& fsm, const Event& evt, TargetState& tgs)
+        {
+            Action()(fsm, evt, tgs);
+        }
+    };
 
+    // Row<Origin, Event, Target, None, Guard>
+    template<class OriginState, class Event, class TargetState, class Action, class Guard>
+    struct TTRow<OriginState, Event, TargetState, None, Guard>
+    {
+        using Row_Type_Tag = Normal_Transition_With_Guard_Tag;
+
+        template <class Fsm>
+        static bool ExecuteGuard(Fsm& fsm, const Event& evt, TargetState& tgs)
+        {
+            return Guard()(fsm, evt, tgs);
+        }
+    };
+
+    // Row<Origin, Event, Target, Action, Guard>
+    template<class OriginState, class Event, class TargetState, class Action, class Guard>
+    struct TTRow<OriginState, class Event, class TargetState, class Action, class Guard>
+    {
+        using Row_Type_Tag = Normal_Transition_With_Action_And_Guard_Tag;
+    
+        template <class Fsm>
+        static void ExecuteAction(Fsm& fsm, const Event& evt, TargetState& tgs)
+        {
+            Action()(fsm, evt, tgs);
+        }
+
+        template <class Fsm>
+        static bool ExecuteGuard(Fsm& fsm, const Event& evt, TargetState& tgs)
+        {
+            return Guard()(fsm, evt, tgs);
+        }
+    };
+
+    // Row<Origin, Event, None, Action, None>
+    template<class OriginState, class Event, class TargetState, class Action, class Guard>
+    struct TTRow<OriginState, Event, None, Action, None>
+    {
+        using Row_Type_Tag = Internal_Transition_Tag;
+
+        template <class Fsm>
+        static void ExecuteAction(Fsm& fsm, const Event& evt, TargetState& tgs)
+        {
+            Action()(fsm, evt, tgs);
+        }
+    };
+
+    // Row<Origin, Event, None, Action, Guard>
+    template<class OriginState, class Event, class TargetState, class Action, class Guard>
+    struct TTRow<OriginState, Event, None, Action, Guard>
+    {
+        using Row_Type_Tag = Internal_Transition_With_Guard_Tag;
+
+        template <class Fsm>
+        static void ExecuteAction(Fsm& fsm, const Event& evt, TargetState& tgs)
+        {
+            Action()(fsm, evt, tgs);
+        }
+
+        template <class Fsm>
+        static bool ExecuteGuard(Fsm& fsm, const Event& evt, TargetState& tgs)
+        {
+            return Guard()(fsm, evt, tgs);
+        }
+    };
+
+    // Row<Origin, Event, None, None, Guard>
+    template<class OriginState, class Event, class TargetState, class Action, class Guard>
+    struct TTRow<OriginState, Event, None, None, Guard>
+    {
+        using Row_Type_Tag = Empty_Transition_With_Guard_Tag;
+
+        template <class Fsm>
+        static bool ExecuteGuard(Fsm& fsm, const Event& evt, TargetState& tgs)
+        {
+            return Guard()(fsm, evt, tgs);
+        }
+    };
+
+    // Row<Origin, Event, None, None, None>
+    template<class OriginState, class Event, class TargetState, class Action, class Guard>
+    struct TTRow<OriginState, Event, None, None, None>
+    {
+        using Row_Type_Tag = Empty_Transition_Tag;
+    };
+
+} /* End of namespace Front*/
+
+} /* End of namespace MSM */
