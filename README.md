@@ -1,9 +1,9 @@
 # ✔️ Meta State Machine
 A high performance statemachine.
 This project was inspired by [boost::msm](https://www.boost.org/doc/libs/1_86_0/libs/msm/doc/HTML/index.html).
-It is inted as a less complex implementation, though with that also less performant,
+It is intended as a less complex implementation, though with that also less performant,
 as this implementation uses a bit more runtime stuff to perform transitions.
-It also has fewer features that boost::msm, though should still suffice for simple state machine implementations.
+It also has fewer features that boost::msm it however still suffices for "simple" state machine implementation.
 
 # 📥 Installation
 ```bash
