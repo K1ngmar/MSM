@@ -23,21 +23,18 @@ $(OBJ): $(ODIR)/%.o: $(SDIR)/%.c
 
 clean:
 	@echo "$(COLOR_YELLOW)clean $(NAME)... $(COLOR_RESET)"
-	@$(MAKE) clean -C $(LIBKM_LOCATION)
 	@printf "$(COLOR_RED)"
 	$(RM) -r $(ODIR)
 	@printf "$(COLOR_RESET)"
 
 fclean: clean
 	@echo "$(COLOR_YELLOW)force clean $(NAME)... $(COLOR_RESET)"
-	@$(MAKE) fclean -C $(LIBKM_LOCATION)
 	@printf "$(COLOR_RED)"
 	$(RM) $(NAME)
 	$(RM) -rf $(UNIT_BIN)
 	@printf "$(COLOR_RESET)"
 
 re: fclean
-	@$(MAKE) re -C $(LIBKM_LOCATION)
 	@$(MAKE) all
 
 # Unit tests
@@ -55,17 +52,14 @@ unit_test: unit_test_build
 # Debugging
 debug: fclean
 	@echo "$(COLOR_YELLOW)Building $(NAME) debug... $(COLOR_RESET)"
-	@$(MAKE) debug -C $(LIBKM_LOCATION)
 	@$(MAKE) DEBUG=1
 
 leaks: fclean
 	@echo "$(COLOR_YELLOW)Building $(NAME) leaks... $(COLOR_RESET)"
-	@$(MAKE) leaks -C $(LIBKM_LOCATION)
 	@$(MAKE) LEAKS=1
 
 fsanitize: fclean
 	@echo "$(COLOR_YELLOW)Building $(NAME) fsanitize... $(COLOR_RESET)"
-	@$(MAKE) fsanitize -C $(LIBKM_LOCATION)
 	@$(MAKE) FSANITIZE=1
 
 # Phony

@@ -5,7 +5,7 @@ namespace MSM
     /*!
      * @brief -.
     */
-    template <Template Derived>
+    template <class Derived>
     class State<Derived>
     {
         
@@ -22,6 +22,16 @@ namespace MSM
         template<EventType Event, StateMachineType StateMachine>
         virtual on_exit(const Event& evt, StateMachine& fsm)
         {};
+    };
+
+    /*!
+     * @brief A transition to a state inheiriting TerminateState will be the last transition executed.
+     *        The statemachine will stop running after the on_entry() of this state is reached.
+    */
+    template <class Derived>
+    class TerminateState<Derived>
+    {
+
     };
 
 } /* End namespace MSM */

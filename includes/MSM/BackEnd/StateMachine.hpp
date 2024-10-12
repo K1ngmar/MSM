@@ -7,8 +7,8 @@ namespace MSM
     /*!
      * The actual implementation of the statemachine based on the frontend transition table. 
     */
-    template<MSM::TransitionTable FrontEnd>
-    class StateMachine<FrontEnd>
+    template<class StateMachineFrontEnd>
+    class StateMachine<StateMachineFrontEnd>
     {
     private:
 
@@ -24,17 +24,28 @@ namespace MSM
         */
         void SetStateActive(const State& incommingState);
 
-        /*!
-        * @brief When implementing a State machine overload this function to set the initial state when the state machine is constructed.
-        */
-        virtual State InitialState() const = 0;
-
     public:
 
+        /*!
+         * @brief -.
+        */
         const State& CurrentState() const;
 
-        template<EventType Event>
-        const ProcessEvent(const Event& evt);
+        /*!
+         * @brief Starts the state machine.
+        */
+        void Start();
+
+        /*!
+         * @brief Stops the statemachine.
+        */
+        void Stop();
+
+        /*!
+         * @brief Processes event, tries to execute transition defined in the transition table.
+        */
+        template <class Event>
+        void ProcessEvent(const Event& e);
 
     };
 
