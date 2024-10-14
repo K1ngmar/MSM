@@ -2,17 +2,12 @@
 
 #include "Frontend/TTrow.hpp"
 
-namespace MSM
-{
-
-namespace Front
-{
+namespace MSM { namespace Front {
 
     /*!
      * @brief Statemachine frontend.
     */
-    template <class Derived>
-    class StateMachine<Derived>
+    class StateMachine
     {
     private:
 
@@ -36,6 +31,6 @@ namespace Front
     };
 
 
-} /* End of namespace Front*/
+} /* End of namespace Front */
 
 } /* End of namespace MSM */
