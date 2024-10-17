@@ -24,10 +24,6 @@ namespace MSM { namespace Front {
         virtual void on_exit(Event const& evt, FSM& fsm)
         {};
 
-        /*!
-         * @brief When implementing a State machine overload this function to set the initial state when the state machine is constructed.
-        */
-        virtual State InitialState() const = 0;
     };
 
 
