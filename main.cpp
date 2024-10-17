@@ -51,7 +51,7 @@ struct TransitionTable
 };
 
 template<class ...Rows>
-void PrintRows(TransitionTable<Rows...> transitionTable)
+void PrintRows(std::tuple<Rows...> transitionTable)
 {
     ((
         std::cout << typeid(typename Rows::State).name() << ", " <<
@@ -60,18 +60,41 @@ void PrintRows(TransitionTable<Rows...> transitionTable)
     ), ...);
 }
 
+
+template<typename ...Rows>
+using tuple_cat_t = decltype(std::tuple_cat(std::declval<Rows>()...));
+
+template<typename ...Rows>
+using remove_t = tuple_cat_t<
+    typename std::conditional<
+        std::is_same_v<typename Rows::State, float>,
+        std::tuple<Rows>,
+        std::tuple<>
+    >::type...
+>;
+
 int main()
 {
-    TransitionTable<
+    using transitionTable = TransitionTable<
         Row<int, float, char>,
         Row<int, float, None>,
         Row<float, int, None>,
         Row<float, None, None>
-    > transitionTable;
+    >;
 
     // auto matchingRows = GetRows<int, float>(transitionTable);
 
-    PrintRows(transitionTable);
+    // PrintRows(transitionTable);
+
+
+
+    remove_t<
+        Row<int, float, char>,
+        Row<int, float, None>,
+        Row<float, int, None>,
+        Row<float, None, None>
+    > a;
+	PrintRows(a);
 
 
     return 0;
