@@ -64,14 +64,19 @@ void PrintRows(std::tuple<Rows...> transitionTable)
 template<typename ...Rows>
 using tuple_cat_t = decltype(std::tuple_cat(std::declval<Rows>()...));
 
-template<typename ...Rows>
-using remove_t = tuple_cat_t<
-    typename std::conditional<
-        std::is_same_v<typename Rows::State, float>,
-        std::tuple<Rows>,
-        std::tuple<>
-    >::type...
->;
+template<class State, class Event>
+struct GetPossibleTransitions
+{
+    template <typename ...Rows>
+    using possibleTransitions = tuple_cat_t<
+        typename std::conditional<
+            std::is_same_v<typename Rows::State, State> && std::is_same_v<typename Rows::Event, Event>,
+            std::tuple<Rows>,
+            std::tuple<>
+        >::type...
+    >;
+};
+
 
 int main()
 {
@@ -86,9 +91,7 @@ int main()
 
     // PrintRows(transitionTable);
 
-
-
-    remove_t<
+    GetPossibleTransitions<int, float>::possibleTransitions<
         Row<int, float, char>,
         Row<int, float, None>,
         Row<float, int, None>,
