@@ -5,6 +5,7 @@
 #include <functional>
 #include <typeindex>
 #include <typeinfo>
+#include <type_traits>
 
 struct None
 {};
@@ -45,9 +46,25 @@ struct Row<A, B, None>
     using Guard = None;
 };
 
+
+template<typename ...Rows>
+using tuple_cat_t = decltype(std::tuple_cat(std::declval<Rows>()...));
+
 template<class ...Rows>
 struct TransitionTable
 {
+	template<class State, class Event>
+	struct GetPossibleTransitions
+	{
+		using possibleTransitions = tuple_cat_t<
+			typename std::conditional<
+				std::is_same_v<typename Rows::State, State> && std::is_same_v<typename Rows::Event, Event>,
+				std::tuple<Rows>,
+				std::tuple<>
+			>::type...
+		>;
+	};
+
 };
 
 template<class ...Rows>
@@ -60,24 +77,6 @@ void PrintRows(std::tuple<Rows...> transitionTable)
     ), ...);
 }
 
-
-template<typename ...Rows>
-using tuple_cat_t = decltype(std::tuple_cat(std::declval<Rows>()...));
-
-template<class State, class Event>
-struct GetPossibleTransitions
-{
-    template <typename ...Rows>
-    using possibleTransitions = tuple_cat_t<
-        typename std::conditional<
-            std::is_same_v<typename Rows::State, State> && std::is_same_v<typename Rows::Event, Event>,
-            std::tuple<Rows>,
-            std::tuple<>
-        >::type...
-    >;
-};
-
-
 int main()
 {
     using transitionTable = TransitionTable<
@@ -87,17 +86,8 @@ int main()
         Row<float, None, None>
     >;
 
-    // auto matchingRows = GetRows<int, float>(transitionTable);
-
-    // PrintRows(transitionTable);
-
-    GetPossibleTransitions<int, float>::possibleTransitions<
-        Row<int, float, char>,
-        Row<int, float, None>,
-        Row<float, int, None>,
-        Row<float, None, None>
-    > a;
-	PrintRows(a);
+	transitionTable::GetPossibleTransitions<int, float>::possibleTransitions transitions;
+	PrintRows(transitions);
 
 
     return 0;
