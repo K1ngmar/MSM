@@ -1,15 +1,18 @@
 #pragma once
 
-#include "FrontEnd/State.hpp"
+#include "Frontend/State.hpp"
 
-namespace MSM
-{
+namespace MSM { namespace Back {
+
     /*!
-     * The actual implementation of the statemachine based on the frontend transition table. 
+     * @brief The actual implementation of the statemachine based on the frontend transition table. 
     */
-    template<class StateMachineFrontEnd>
-    class StateMachine<StateMachineFrontEnd>
+    template<class StateMachineFrontend>
+    class StateMachine
     {
+		using Frontend = StateMachineFrontend;
+		using TransitionTable = Frontend::TransitionTable;
+
     private:
 
         State currentState; /*!< -. */
@@ -45,8 +48,13 @@ namespace MSM
          * @brief Processes event, tries to execute transition defined in the transition table.
         */
         template <class Event>
-        void ProcessEvent(const Event& e);
+        void ProcessEvent(const Event& e)
+		{
+			TransitionTable::GetPossibleTransitions<State, Event>()
+		}
 
     };
 
-} /* End of namespace MSM*/
+} /* End of namespace Back */
+
+} /* End of namespace MSM */

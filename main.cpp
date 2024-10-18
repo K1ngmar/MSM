@@ -6,6 +6,7 @@
 #include <typeindex>
 #include <typeinfo>
 #include <type_traits>
+#include <any>
 
 struct None
 {};
@@ -77,6 +78,29 @@ void PrintRows(std::tuple<Rows...> transitionTable)
     ), ...);
 }
 
+struct Base
+{
+	virtual void GetType()
+	{}
+};
+
+struct Derived1 : public Base
+{
+	void GetType() override
+	{}
+};
+
+struct Derived2 : public Base
+{
+	void GetType() override
+	{}
+};
+
+void PrintType(Derived1* a)
+{
+	std::cout << typeid(a).name() << std::endl;
+}
+
 int main()
 {
     using transitionTable = TransitionTable<
@@ -89,6 +113,12 @@ int main()
 	transitionTable::GetPossibleTransitions<int, float>::possibleTransitions transitions;
 	PrintRows(transitions);
 
+	Base* a = new Derived1();
+	Base* b = new Derived2();
+
+	PrintType(a);
+	PrintType(b);
+	// PrintType(&Derived2::GetType);
 
     return 0;
 }
