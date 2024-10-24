@@ -1,5 +1,9 @@
 #pragma once
 
+#include <tuple>
+#include <type_traits>
+#include <iostream>
+
 namespace MSM { namespace Back { namespace Utility {
 
 template<class ...Rows>
@@ -11,7 +15,6 @@ void PrintRows(std::tuple<Rows...> transitionTable)
                      typeid(typename Rows::Guard).name() << std::endl
     ), ...);
 }
-
 
 } /* End of namespace Utility */
 

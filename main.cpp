@@ -1,4 +1,6 @@
 
+#include "includes/MSM/BackEnd/Row/Utility.hpp"
+
 #include <string>
 #include <iostream>
 #include <tuple>
@@ -66,6 +68,7 @@ struct TransitionTable
 		>;
 	};
 
+    using PossibleStates = tuple_cat_t<std::tuple<typename Rows::State>...>;
 };
 
 template<class ...Rows>
@@ -78,28 +81,15 @@ void PrintRows(std::tuple<Rows...> transitionTable)
     ), ...);
 }
 
-struct Base
+template<class ...States>
+void PrintStates(std::tuple<States...> transitionTable)
 {
-	virtual void GetType()
-	{}
-};
-
-struct Derived1 : public Base
-{
-	void GetType() override
-	{}
-};
-
-struct Derived2 : public Base
-{
-	void GetType() override
-	{}
-};
-
-void PrintType(Derived1* a)
-{
-	std::cout << typeid(a).name() << std::endl;
+    ((
+        std::cout << typeid(States).name() << ", "
+    ), ...);
+    std::cout << std::endl;
 }
+
 
 int main()
 {
@@ -112,13 +102,12 @@ int main()
 
 	transitionTable::GetPossibleTransitions<int, float>::possibleTransitions transitions;
 	PrintRows(transitions);
+    std::cout << "\n\n";
 
-	Base* a = new Derived1();
-	Base* b = new Derived2();
+    transitionTable::PossibleStates possibleStates;
+    PrintStates(possibleStates);
 
-	PrintType(a);
-	PrintType(b);
-	// PrintType(&Derived2::GetType);
+
 
     return 0;
 }
