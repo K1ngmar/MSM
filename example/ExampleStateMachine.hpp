@@ -5,7 +5,7 @@
 
 #include <iostream>
 
-struct ExampleStateMachineFrontend : public MSM::Front::StateMachine
+namespace ExampleStateMachine
 {
 
 ////////////
@@ -173,25 +173,39 @@ struct ExampleStateMachineFrontend : public MSM::Front::StateMachine
 /////////////////////
 // TransitionTable //
 /////////////////////
+	using None = MSM::Front::None;
 
-	using TransitionTable = MSM::Front::Transitiontable<
-		MSM::Front::TTRow<Booting, LocalEvent::FinishedBooting, Configuring, MSM::Front::None, MSM::Front::None>,
+	using TransitionTable = MSM::Front::TransitionTable
+	<
+		MSM::Front::Row<Booting,
+			MSM::Front::Transition<LocalEvent::FinishedBooting, Configuring, None, None>
+		>,
 
-		MSM::Front::TTRow<Configuring, LocalEvent::FinishedConfiguring, Idle, MSM::Front::None, MSM::Front::None>,
+		MSM::Front::Row<Configuring,
+			MSM::Front::Transition<LocalEvent::FinishedConfiguring, Idle, None, None>
+		>,
 
-		MSM::Front::TTRow<Idle, LocalEvent::StartGame, StartingGame, MSM::Front::None, MSM::Front::None>,
-		MSM::Front::TTRow<Idle, LocalEvent::StartGame, MSM::Front::None, MSM::Front::None, MSM::Front::None>,
-		MSM::Front::TTRow<Idle, LocalEvent::ShutDown, ShuttingDown, MSM::Front::None, MSM::Front::None>,
+		MSM::Front::Row<Idle,
+			MSM::Front::Transition<LocalEvent::StartGame, StartingGame, None, None>,
+			MSM::Front::Transition<LocalEvent::StartGame, None, None, None>,
+			MSM::Front::Transition<LocalEvent::ShutDown, ShuttingDown, None, None>
+		>,
 
-		MSM::Front::TTRow<StartingGame, LocalEvent::GameStarted, Playing, MSM::Front::None, MSM::Front::None>,
-		MSM::Front::TTRow<StartingGame, LocalEvent::ShutDown, MSM::Front::None, MSM::Front::None, IgnoreEventGuard>,
+		MSM::Front::Row<StartingGame
+			MSM::Front::Transition<LocalEvent::GameStarted, Playing, None, None>,
+			MSM::Front::Transition<LocalEvent::ShutDown, None, None, IgnoreEventGuard>
+		>,
 
-		MSM::Front::TTRow<Playing, LocalEvent::Pause, Paused, MSM::Front::None, MSM::Front::None>,
-		MSM::Front::TTRow<Playing, LocalEvent::ExitGame, Idle, SaveGame, MSM::Front::None>,
-		MSM::Front::TTRow<Playing, LocalEvent::ShutDown, ShuttingDown, SaveGame, MSM::Front::None>,
+		MSM::Front::Row<Playing,
+			MSM::Front::Transition<LocalEvent::Pause, Paused, None, None>,
+			MSM::Front::Transition<LocalEvent::ExitGame, Idle, SaveGame, None>,
+			MSM::Front::Transition<LocalEvent::ShutDown, ShuttingDown, SaveGame, None>
+		>,
 
-		MSM::Front::TTRow<Paused, LocalEvent::Unpause, Paused, MSM::Front::None, MSM::Front::None>,
-		MSM::Front::TTRow<Paused, LocalEvent::ShutDown, ShuttingDown, SaveGame, MSM::Front::None>
+		MSM::Front::Row<Paused,
+			MSM::Front::Transition<LocalEvent::Unpause, Paused, None, None>,
+			MSM::Front::Transition<LocalEvent::ShutDown, ShuttingDown, SaveGame, None>
+		>
 	>;
 
-};
+} /* Namespace ExampleStateMachine */

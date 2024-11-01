@@ -93,7 +93,6 @@ struct TransitionTable
 			throw std::runtime_error("lol");
         }
     }
-
 };
 
 template<class ...Transitions>

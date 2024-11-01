@@ -10,12 +10,12 @@ namespace MSM { namespace Back {
     template<class StateMachineFrontend>
     class StateMachine
     {
-		using Frontend = StateMachineFrontend;
-		using TransitionTable = Frontend::TransitionTable;
+      using Frontend = StateMachineFrontend;
+      using TransitionTable = Frontend::TransitionTable;
 
     private:
 
-        State currentState; /*!< -. */
+        size_t currentStateId; /*!< -. */
 
         /*!
          * @brief -.
@@ -32,7 +32,7 @@ namespace MSM { namespace Back {
         /*!
          * @brief -.
         */
-        const State& CurrentState() const;
+        size_t CurrentStateId() const;
 
         /*!
          * @brief Starts the state machine.
@@ -48,10 +48,7 @@ namespace MSM { namespace Back {
          * @brief Processes event, tries to execute transition defined in the transition table.
         */
         template <class Event>
-        void ProcessEvent(const Event& e)
-		{
-			TransitionTable::GetPossibleTransitions<State, Event>()
-		}
+        void ProcessEvent(const Event& e);
 
     };
 
