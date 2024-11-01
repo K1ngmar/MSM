@@ -14,40 +14,53 @@
 struct None
 {};
 
-template<class A, class B, class C>
+template <class OriginState_, class Event_, class ...Transitions>
 struct Row
 {
-    using Type = std::string;
-    using State = A;
-    using Event = B;
-    using Guard = C;
+    using OriginState = OriginState_;
+    using Event = Event_;
+    
+    static const std::tuple<Transitions...> transitions;
 };
 
-template<class A, class C>
-struct Row<A, None, C>
+template <class DestinationState, class Action, class Guard>
+struct Transition
 {
-    using Type = int;
-    using State = A;
-    using Event = None;
-    using Guard = C;
+    using Tag = char;
+
+    using Dest = DestinationState;
+    using Act = Action;
+    using Grd = Guard;
 };
 
-template<class A>
-struct Row<A, None, None>
+template <class DestinationState, class Action>
+struct Transition<DestinationState, Action, None>
 {
-    using Type = float;
-    using State = A;
-    using Event = None;
-    using Guard = None;
+    using Tag = int;
+
+    using Dest = DestinationState;
+    using Act = Action;
+    using Grd = None;
 };
 
-template<class A, class B>
-struct Row<A, B, None>
+template <class DestinationState, class Guard>
+struct Transition<DestinationState, None, Guard>
 {
-    using Type = size_t;
-    using State = A;
-    using Event = B;
-    using Guard = None;
+    using Tag = size_t;
+
+    using Dest = DestinationState;
+    using Act = None;
+    using Grd = Guard;
+};
+
+template <class DestinationState>
+struct Transition<DestinationState, None, None>
+{
+    using Tag = float;
+
+    using Dest = DestinationState;
+    using Act = None;
+    using Grd = None;
 };
 
 
@@ -62,111 +75,124 @@ struct TransitionTable
 	{
 		using possibleTransitions = tuple_cat_t<
 			typename std::conditional<
-				std::is_same_v<typename Rows::State, State> && std::is_same_v<typename Rows::Event, Event>,
+				std::is_same_v<typename Rows::OriginState, State> && std::is_same_v<typename Rows::Event, Event>,
 				std::tuple<Rows>,
 				std::tuple<>
 			>::type...
 		>;
 	};
 
-    using PossibleStates = tuple_cat_t<std::tuple<typename Rows::State>...>;
-    PossibleStates possibleStates;
+    using AllRowsInATuple = tuple_cat_t<std::tuple<Rows>...>;
+    AllRowsInATuple allRowsInATuple;
 
-    // Calls your func with tuple element.
-    template <size_t N = 0>
-    auto runtime_get(size_t idx)
+    template <typename Event, size_t N = 0>
+    void get_transition(const size_t currentStateId)
     {
-        if (N == idx)
+        if (N == currentStateId)
         {
-            return std::get<N>(possibleStates);
+            std::cout << typeid(std::tuple_element_t<N, AllRowsInATuple>::OriginState).name() << std::endl;
+            return;
         }
-
-        if constexpr (N + 1 < std::tuple_size_v<PossibleStates>)
+        if constexpr (N + 1 < std::tuple_size_v<AllRowsInATuple>)
         {
-            return runtime_get<N + 1>(idx);
+            get_transition<N + 1>(currentStateId);
         }
         else
         {
-            throw std::runtime_error("impossible state");
+            throw std::runtime_error("lol");
         }
     }
+
 };
+
+// template<class ...Rows>
+// void PrintTransition(std::tuple<Rows...> transitionTable)
+// {
+//     ((
+//         std::cout << typeid(typename Rows::OriginState).name() << ", " <<
+//                      typeid(typename Rows::Event).name() << std::endl
+//     ), ...);
+// }
+
+template<class ...Transitions>
+void PrintTransitions(const std::tuple<Transitions...> trs) // Why in the world cant this take a reference?
+{
+    ((
+        std::cout << "Transition: " << typeid(typename Transitions::Dest).name() << ", " <<
+        typeid(typename Transitions::Act).name() << ", " <<
+        typeid(typename Transitions::Grd).name() << ", " << "\n"
+    ), ...);
+}
 
 template<class ...Rows>
 void PrintRows(std::tuple<Rows...> transitionTable)
 {
-    ((
-        std::cout << typeid(typename Rows::State).name() << ", " <<
-                     typeid(typename Rows::Event).name() << ", " <<
-                     typeid(typename Rows::Guard).name() << std::endl
-    ), ...);
-}
-
-template<class ...States>
-void PrintStates(std::tuple<States...> transitionTable)
-{
-    ((
-        std::cout << typeid(States).name() << ", "
-    ), ...);
+    ([]
+    {
+        std::cout << "\nRow: ";
+        std::cout << typeid(typename Rows::OriginState).name() << ", " << typeid(typename Rows::Event).name() << "\n";
+        PrintTransitions(Rows::transitions);
+        std::cout << "\n";
+    }(), ...);
     std::cout << std::endl;
 }
 
 
-// int main()
+int main()
+{
+    using transitionTable = TransitionTable<
+        Row<int, float, Transition<char, bool, double>,
+                        Transition<char, char, None> >,
+        
+        Row<float, int, Transition<char, bool, double>,
+                        Transition<float, None, None> >
+    >;
+    transitionTable tt;
+
+
+    // std::cout << "All possible transitions for <int, float>:\n";
+	// transitionTable::GetPossibleTransitions<int, float>::possibleTransitions transitions;
+	// PrintTransition(transitions);
+
+
+    std::cout << "\n\nAll Rows:\n";
+    PrintRows(tt.allRowsInATuple);
+
+
+    std::cout << "\n\nTransition gotten at runtime by current state and event:\n";
+	// PrintRows(transitions);
+
+
+    return 0;
+}
+
+
+// template <typename Tuple, size_t N = 0>
+// void parse(const size_t idx)
 // {
-//     using transitionTable = TransitionTable<
-//         Row<int, float, char>,
-//         Row<int, float, None>,
-//         Row<float, int, None>,
-//         Row<float, None, None>
-//     >;
-//     transitionTable tt;
-
-
-//     std::cout << "All possible transitions:\n";
-// 	transitionTable::GetPossibleTransitions<int, float>::possibleTransitions transitions;
-// 	PrintRows(transitions);
-
-
-//     std::cout << "\n\nALl possible states:\n";
-//     PrintStates(tt.possibleStates);
-
-
-//     std::cout << "\n\nTransition gotten at runtime by current state and event:\n";
-//     auto currentState = tt.runtime_get(2);
-// 	// PrintRows(transitions);
-
-
-//     return 0;
+//     if (N == idx)
+//     {
+//         std::cout << typeid(std::tuple_element_t<N, Tuple>).name() << std::endl;
+//         return;
+//     }
+//     if constexpr (N + 1 < std::tuple_size_v<Tuple>)
+//     {
+//         parse<Tuple, N + 1>(idx);
+//     }
+//     else
+//     {
+//         throw std::runtime_error("lol");
+//     }
 // }
 
+// int main(int argv, const char** argc)
+// {
+//     using Types = std::tuple<int, float, char, bool, double>;
+//     while (true)
+//     {
+//         size_t idx;
+//         std::cin >> idx;
 
-template <typename Tuple, size_t N = 0>
-void parse(const size_t idx)
-{
-    if (N == idx)
-    {
-        std::cout << typeid(std::tuple_element_t<N, Tuple>).name() << std::endl;
-        return;
-    }
-    if constexpr (N + 1 < std::tuple_size_v<Tuple>)
-    {
-        parse<Tuple, N + 1>(idx);
-    }
-    else
-    {
-        throw std::runtime_error("lol");
-    }
-}
-
-int main(int argv, const char** argc)
-{
-    using Types = std::tuple<int, float, char, bool, double>;
-    while (true)
-    {
-        size_t idx;
-        std::cin >> idx;
-
-        parse<Types>(idx);
-    }
-}
+//         parse<Types>(idx);
+//     }
+// }
