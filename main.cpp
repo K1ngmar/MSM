@@ -9,6 +9,7 @@
 #include <typeinfo>
 #include <type_traits>
 #include <any>
+#include <exception>
 
 struct None
 {};
@@ -69,6 +70,26 @@ struct TransitionTable
 	};
 
     using PossibleStates = tuple_cat_t<std::tuple<typename Rows::State>...>;
+    PossibleStates possibleStates;
+
+    // Calls your func with tuple element.
+    template <size_t N = 0>
+    auto runtime_get(size_t idx)
+    {
+        if (N == idx)
+        {
+            return std::get<N>(possibleStates);
+        }
+
+        if constexpr (N + 1 < std::tuple_size_v<PossibleStates>)
+        {
+            return runtime_get<N + 1>(idx);
+        }
+        else
+        {
+            throw std::runtime_error("impossible state");
+        }
+    }
 };
 
 template<class ...Rows>
@@ -91,23 +112,61 @@ void PrintStates(std::tuple<States...> transitionTable)
 }
 
 
-int main()
+// int main()
+// {
+//     using transitionTable = TransitionTable<
+//         Row<int, float, char>,
+//         Row<int, float, None>,
+//         Row<float, int, None>,
+//         Row<float, None, None>
+//     >;
+//     transitionTable tt;
+
+
+//     std::cout << "All possible transitions:\n";
+// 	transitionTable::GetPossibleTransitions<int, float>::possibleTransitions transitions;
+// 	PrintRows(transitions);
+
+
+//     std::cout << "\n\nALl possible states:\n";
+//     PrintStates(tt.possibleStates);
+
+
+//     std::cout << "\n\nTransition gotten at runtime by current state and event:\n";
+//     auto currentState = tt.runtime_get(2);
+// 	// PrintRows(transitions);
+
+
+//     return 0;
+// }
+
+
+template <typename Tuple, size_t N = 0>
+void parse(const size_t idx)
 {
-    using transitionTable = TransitionTable<
-        Row<int, float, char>,
-        Row<int, float, None>,
-        Row<float, int, None>,
-        Row<float, None, None>
-    >;
+    if (N == idx)
+    {
+        std::cout << typeid(std::tuple_element_t<N, Tuple>).name() << std::endl;
+        return;
+    }
+    if constexpr (N + 1 < std::tuple_size_v<Tuple>)
+    {
+        parse<Tuple, N + 1>(idx);
+    }
+    else
+    {
+        throw std::runtime_error("lol");
+    }
+}
 
-	transitionTable::GetPossibleTransitions<int, float>::possibleTransitions transitions;
-	PrintRows(transitions);
-    std::cout << "\n\n";
+int main(int argv, const char** argc)
+{
+    using Types = std::tuple<int, float, char, bool, double>;
+    while (true)
+    {
+        size_t idx;
+        std::cin >> idx;
 
-    transitionTable::PossibleStates possibleStates;
-    PrintStates(possibleStates);
-
-
-
-    return 0;
+        parse<Types>(idx);
+    }
 }
