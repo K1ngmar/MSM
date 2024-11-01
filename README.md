@@ -1,22 +1,17 @@
 # ✔️ Meta State Machine
 A high performance statemachine.
-This project was inspired by [boost::msm](https://www.boost.org/doc/libs/1_86_0/libs/msm/doc/HTML/index.html).
-It is intended as a less complex implementation, though with that also less performant,
-as this implementation uses a bit more runtime stuff to perform transitions.
-It also has fewer features that boost::msm it however still suffices for "simple" state machine implementation.
+Big shoutout to [boost::msm](https://www.boost.org/doc/libs/1_86_0/libs/msm/doc/HTML/index.html) for inspiring me to create this project.
+I started this project to learn more about template metaprogramming while also making something very usefull for some of my other projects.
+It is probably not as performant as boost::msm since they have put years of reasearch into it and probably use even less runtime stuff than I do here :)
+
+# Learn more about MSM
+Check out the [wiki](wiki) to learn more about the msms and its implementation!
 
 # 📥 Installation
 ```bash
 # Clone the repository
-$ git clone --recurse-submodules https://github.com/K1ngmar/FSM
+$ git clone --recurse-submodules https://github.com/K1ngmar/MSM
 
 # Build the project
-$ make -C FSM
-
-# Run the program!
-$ ./FSM/FSM
+$ make -C MSM
 ```
-
-# 🧡 Project template
-This project was hatched from an awesome C project template created with ❤️ by [K1ngmar](https://github.com/K1ngmar).  
-Check out the template [here!](https://github.com/K1ngmar/C-project-template)
