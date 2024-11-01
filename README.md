@@ -5,7 +5,7 @@ I started this project to learn more about template metaprogramming while also m
 It is probably not as performant as boost::msm since they have put years of reasearch into it and probably use even less runtime stuff than I do here :)
 
 # Learn more about MSM
-Check out the [wiki](wiki) to learn more about the msms and its implementation!
+Check out the [wiki](https://github.com/K1ngmar/MSM/wiki) to learn more about the msms and its implementation!
 
 # 📥 Installation
 ```bash
