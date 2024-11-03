@@ -1,7 +1,10 @@
 
 #pragma once
 
-#include "MSM/Frontend/StateMachine.hpp"
+#include "MSM/Frontend/State.hpp"
+#include "MSM/Frontend/TransitionTable.hpp"
+#include "MSM/Frontend/Row.hpp"
+#include "MSM/Frontend/Transition.hpp"
 
 #include <iostream>
 
@@ -191,7 +194,7 @@ namespace ExampleStateMachine
 			MSM::Front::Transition<LocalEvent::ShutDown, ShuttingDown, None, None>
 		>,
 
-		MSM::Front::Row<StartingGame
+		MSM::Front::Row<StartingGame,
 			MSM::Front::Transition<LocalEvent::GameStarted, Playing, None, None>,
 			MSM::Front::Transition<LocalEvent::ShutDown, None, None, IgnoreEventGuard>
 		>,

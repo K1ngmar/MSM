@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Backend/Transition/TransitionTraits.hpp"
+#include "MSM/Backend/Transition/TransitionTraits.hpp"
 
 namespace MSM { namespace Front {
 

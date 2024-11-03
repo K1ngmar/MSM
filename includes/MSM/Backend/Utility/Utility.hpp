@@ -6,6 +6,10 @@
 
 namespace MSM { namespace Back { namespace Utility {
 
+    template<typename ...Ts>
+    using tuple_cat_t = decltype(std::tuple_cat(std::declval<Ts>()...));
+
+
     /*!
      * @brief Prints all types of all transitions to the standard output.
     */

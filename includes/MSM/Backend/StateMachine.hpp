@@ -1,31 +1,24 @@
 #pragma once
 
-#include "Frontend/State.hpp"
+#include "MSM/Backend/TransitionTable.hpp"
+
+#include "MSM/Frontend/State.hpp"
 
 namespace MSM { namespace Back {
 
     /*!
      * @brief The actual implementation of the statemachine based on the frontend transition table. 
     */
-    template<class StateMachineFrontend>
+    template<class TransitionTableFront>
     class StateMachine
     {
-      using Frontend = StateMachineFrontend;
-      using TransitionTable = Frontend::TransitionTable;
+    private:
+    
+      using TransitionTable = MSM::Back::TransitionTable<typename TransitionTableFront::AllRowsInATuple>;
 
     private:
 
         size_t currentStateId; /*!< -. */
-
-        /*!
-         * @brief -.
-        */
-        StateMachine();
-
-        /*!
-        * @brief -.
-        */
-        void SetStateActive(const State& incommingState);
 
     public:
 
@@ -49,7 +42,6 @@ namespace MSM { namespace Back {
         */
         template <class Event>
         void ProcessEvent(const Event& e);
-
     };
 
 } /* End of namespace Back */
