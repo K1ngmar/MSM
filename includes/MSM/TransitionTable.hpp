@@ -24,13 +24,13 @@ private:
 
 	friend class StateMachine<TransitionTable<Rows...>>;
 
-	using AllRowsInATuple = MSM::Utility::tuple_cat_t<std::tuple<Rows>...>;
+	using AllRowsInATuple = std::tuple<Rows...>;
 
 	/*!
 	 * @brief Gets all states with the State_Type_Initial_Tag and stores them in a tuple.
 	*/
-	using InitialStates = Utility::tuple_cat_t<
-		std::conditional<
+	using InitialStates = MSM::Utility::tuple_cat_t<
+		std::conditional_t<
 			std::is_same_v<typename Rows::OriginState::StateType, MSM::State_Type_Initial_Tag>,
 			std::tuple<typename Rows::OriginState>,
 			std::tuple<>
@@ -38,7 +38,7 @@ private:
 	>;
 
 	template<class State, size_t N = 0>
-	size_t GetStateId()
+	static size_t GetStateId()
 	{
 		if constexpr (std::is_same_v<typename std::tuple_element_t<N, AllRowsInATuple>::OriginState, State>)
 		{
@@ -55,7 +55,7 @@ private:
 	}
 
 	template <class Event, size_t N = 0>
-	void DoSomethingWithTheTransition(const size_t currentStateId)
+	static void DoSomethingWithTheTransition(const size_t currentStateId)
 	{
 		if (N == currentStateId)
 		{

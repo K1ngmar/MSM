@@ -7,7 +7,7 @@ int main(void)
 {
     MSM::StateMachine<ExampleStateMachine::TransitionTable> fsm;
 
-	// fsm.Start();
+	fsm.Start();
 
 	// fsm.ProcessEvent(ExampleStateMachineFrontend::LocalEvent::FinishedBooting());
 	// std::this_thread::sleep_for(std::chrono::seconds(2));
