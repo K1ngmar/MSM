@@ -6,6 +6,9 @@
 
 namespace MSM {
 
+struct StateMachineStarting
+{};
+
 /*!
  * @brief The actual implementation of the statemachine based on the frontend transition table. 
 */

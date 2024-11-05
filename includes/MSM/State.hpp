@@ -1,5 +1,7 @@
 #pragma once
 
+#include "MSM/Utility/TypeTraits.hpp"
+
 namespace MSM {
 
     /*!
@@ -25,5 +27,11 @@ namespace MSM {
     {
         using StateType = StateTypeTag;
     };
+
+    template<class State, class Event>
+    void ExecuteOnEntry(State& state, const Event& e)
+    {
+        state.on_entry(e);
+    }
 
 } /* End namespace MSM */
