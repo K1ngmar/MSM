@@ -1,6 +1,6 @@
 #pragma once
 
-namespace MSM { namespace Front {
+namespace MSM {
 
     /*!
      * @brief Tag to use for the inital state, no transition to this state will be possible.
@@ -21,11 +21,9 @@ namespace MSM { namespace Front {
      * @brief -.
     */
     template <class StateTypeTag = State_Type_Normal_Tag>
-    class State
+    struct State
     {
         using StateType = StateTypeTag;
     };
-
-} /* End namespace Front*/
 
 } /* End namespace MSM */

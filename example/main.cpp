@@ -1,11 +1,11 @@
 #include "ExampleStateMachine.hpp"
-#include "MSM/Backend/StateMachine.hpp"
+#include "MSM/StateMachine.hpp"
 
 #include <thread>
 
 int main(void)
 {
-    MSM::Back::StateMachine<ExampleStateMachine::TransitionTable> fsm;
+    MSM::StateMachine<ExampleStateMachine::TransitionTable> fsm;
 
 	// fsm.Start();
 

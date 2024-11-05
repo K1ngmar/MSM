@@ -4,7 +4,7 @@
 #include <type_traits>
 #include <iostream>
 
-namespace MSM { namespace Back { namespace Utility {
+namespace MSM { namespace Utility {
 
     template<typename ...Ts>
     using tuple_cat_t = decltype(std::tuple_cat(std::declval<Ts>()...));
@@ -42,7 +42,5 @@ namespace MSM { namespace Back { namespace Utility {
     }
 
 } /* End of namespace Utility */
-
-} /* End of namespace Back */
 
 } /* End of namespace MSM */

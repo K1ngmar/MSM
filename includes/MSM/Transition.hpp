@@ -1,8 +1,8 @@
 #pragma once
 
-#include "MSM/Backend/Transition/TransitionTraits.hpp"
+#include "MSM/TransitionTraits.hpp"
 
-namespace MSM { namespace Front {
+namespace MSM {
 
     /*!
      * @brief Special type to use when you want to use a slot for the transition.
@@ -15,7 +15,7 @@ namespace MSM { namespace Front {
     template<class EventType, class TargetStateType, class ActionType, class GuardType>
     struct Transition
     {
-        using TransitionType_Tag = MSM::Back::Normal_Transition_With_Action_And_Guard_Tag;
+        using TransitionType_Tag = MSM::Normal_Transition_With_Action_And_Guard_Tag;
     
 		using Event = EventType;
 		using TargetState = TargetStateType;
@@ -37,7 +37,7 @@ namespace MSM { namespace Front {
     template<class EventType, class TargetStateType>
     struct Transition<EventType, TargetStateType, None, None>
     {
-        using TransitionType_Tag = MSM::Back::Normal_Transition_Tag;
+        using TransitionType_Tag = MSM::Normal_Transition_Tag;
 
 		using Event = EventType;
 		using TargetState = TargetStateType;
@@ -47,7 +47,7 @@ namespace MSM { namespace Front {
     template<class EventType, class TargetStateType, class ActionType>
     struct Transition<EventType, TargetStateType, ActionType, None>
     {
-        using TransitionType_Tag = MSM::Back::Normal_Transition_With_Action_Tag;
+        using TransitionType_Tag = MSM::Normal_Transition_With_Action_Tag;
 
 		using Event = EventType;
 		using TargetState = TargetStateType;
@@ -63,7 +63,7 @@ namespace MSM { namespace Front {
     template<class EventType, class TargetStateType, class GuardType>
     struct Transition<EventType, TargetStateType, None, GuardType>
     {
-        using TransitionType_Tag = MSM::Back::Normal_Transition_With_Guard_Tag;
+        using TransitionType_Tag = MSM::Normal_Transition_With_Guard_Tag;
 
 		using Event = EventType;
 		using TargetState = TargetStateType;
@@ -79,7 +79,7 @@ namespace MSM { namespace Front {
     template<class EventType, class ActionType>
     struct Transition<EventType, None, ActionType, None>
     {
-        using TransitionType_Tag = MSM::Back::Internal_Transition_Tag;
+        using TransitionType_Tag = MSM::Internal_Transition_Tag;
 
 		using Event = EventType;
 		using Action = ActionType;
@@ -94,7 +94,7 @@ namespace MSM { namespace Front {
     template<class EventType, class ActionType, class GuardType>
     struct Transition<EventType, None, ActionType, GuardType>
     {
-        using TransitionType_Tag = MSM::Back::Internal_Transition_With_Guard_Tag;
+        using TransitionType_Tag = MSM::Internal_Transition_With_Guard_Tag;
 
 		using Event = EventType;
 		using Action = ActionType;
@@ -115,7 +115,7 @@ namespace MSM { namespace Front {
     template<class EventType, class GuardType>
     struct Transition<EventType, None, None, GuardType>
     {
-        using TransitionType_Tag = MSM::Back::Empty_Transition_With_Guard_Tag;
+        using TransitionType_Tag = MSM::Empty_Transition_With_Guard_Tag;
 
 		using Event = EventType;
 		using Guard = GuardType;
@@ -130,11 +130,9 @@ namespace MSM { namespace Front {
     template<class EventType>
     struct Transition<EventType, None, None, None>
     {
-        using TransitionType_Tag = MSM::Back::Empty_Transition_Tag;
+        using TransitionType_Tag = MSM::Empty_Transition_Tag;
     
 		using Event = EventType;
 	};
-
-} /* End of namespace Front*/
 
 } /* End of namespace MSM */

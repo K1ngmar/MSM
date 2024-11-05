@@ -1,6 +1,6 @@
 #pragma once
 
-namespace MSM { namespace Back {
+namespace MSM {
 
     /*!
      * @brief Tag for a normal transition without action or guard.
@@ -51,7 +51,5 @@ namespace MSM { namespace Back {
      *        This type of transition can be used to ignore events.
     */
     struct Empty_Transition_Tag {};
-
-} /* End of namespace Back */
 
 } /* End of namespace MSM*/

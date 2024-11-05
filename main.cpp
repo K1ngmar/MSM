@@ -1,5 +1,5 @@
 
-#include "MSM/backend/Utility/Utility.hpp"
+#include "MSM/Backend/Utility/Utility.hpp"
 
 #include <string>
 #include <iostream>
@@ -120,6 +120,13 @@ void PrintRows(std::tuple<Rows...> transitionTable)
     std::cout << std::endl;
 }
 
+template <template <typename...> typename TupleType, typename ...AllRows>
+struct test
+{
+    test(const TupleType<AllRows...>&& e);
+
+};
+
 
 int main(int argc, char** argv)
 {
@@ -155,6 +162,7 @@ int main(int argc, char** argv)
     std::cout << "\n\nTransition gotten at runtime by current state and event:\n";
 	tt.get_transition<float>(argc);
 
+    test<std::tuple<int,float> t(std::make_tuple<1, 1.0>);
 
     return 0;
 }

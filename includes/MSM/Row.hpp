@@ -1,7 +1,6 @@
 #pragma once
 
-namespace MSM { namespace Front {
-
+namespace MSM {
 
     /*!
      * @brief A row is a combination of a OriginState and al list of all transitions possible from this state.
@@ -13,7 +12,5 @@ namespace MSM { namespace Front {
         
         using Transitions = std::tuple<TransitionTypes...>;
     };
-
-} /* End of namespace Front*/
 
 } /* End of namespace MSM */
