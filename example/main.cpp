@@ -9,7 +9,7 @@ int main(void)
 
 	fsm.Start();
 
-	// fsm.ProcessEvent(ExampleStateMachineFrontend::LocalEvent::FinishedBooting());
+	fsm.ProcessEvent(ExampleStateMachine::LocalEvent::FinishedBooting());
 	// std::this_thread::sleep_for(std::chrono::seconds(2));
 	// fsm.ProcessEvent(ExampleStateMachineFrontend::LocalEvent::FinishedConfiguring());
 	// std::this_thread::sleep_for(std::chrono::seconds(2));

@@ -168,6 +168,16 @@ namespace ExampleStateMachine
 // Guards //
 ////////////
 
+	struct TESTGUARD
+	{
+		template <class Event>
+		bool operator()(const Event& evt)
+		{
+			std::cout << "EXECUTING GUARD, YEETTTT" << std::endl;
+			return true;
+		}
+	};
+
 	/*!
 	 * @brief This is just a typedef to make clear that we are ignoring an event.
 	*/
@@ -181,7 +191,7 @@ namespace ExampleStateMachine
 	using TransitionTable = MSM::TransitionTable
 	<
 		MSM::Row<Booting,
-			MSM::Transition<LocalEvent::FinishedBooting, Configuring, None, None>
+			MSM::Transition<LocalEvent::FinishedBooting, Configuring, None, TESTGUARD>
 		>,
 
 		MSM::Row<Configuring,

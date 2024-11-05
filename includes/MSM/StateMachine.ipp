@@ -14,7 +14,10 @@ void StateMachine<TransitionTableType>::Start()
 };
 
 template<class TransitionTableType>
-void StateMachine<TransitionTableType>::
-void ProcessEvent(const Event& e);
+template <class Event>
+void StateMachine<TransitionTableType>::ProcessEvent(const Event& event)
+{
+    TransitionTableType::template ExecuteTransition(currentStateId, event);
+}
 
 } /* End of namespace MSM */

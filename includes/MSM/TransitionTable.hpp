@@ -55,16 +55,17 @@ private:
 	}
 
 	template <class Event, size_t N = 0>
-	static void DoSomethingWithTheTransition(const size_t currentStateId)
+	static void ExecuteTransition(const size_t currentStateId, const Event& event)
 	{
+		using CurrentRow = std::tuple_element_t<N, AllRowsInATuple>;
 		if (N == currentStateId)
 		{
-			PrintTransitions(std::tuple_element_t<N, AllRowsInATuple>::transitions);
+			CurrentRow::ExecuteTransition(event);
 			return;
 		}
 		if constexpr (N + 1 < std::tuple_size_v<AllRowsInATuple>)
 		{
-			DoSomethingWithTheTransition<Event, N + 1>(currentStateId);
+			ExecuteTransition<Event, N + 1>(currentStateId, event);
 		}
 		else
 		{
