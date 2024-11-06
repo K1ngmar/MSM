@@ -18,11 +18,28 @@ namespace MSM {
             using CurrentTransition = std::tuple_element_t<N, Transitions>;
             if constexpr (std::is_same_v<typename CurrentTransition::Event, Event>)
             {
-                if (CurrentTransition::ExecuteGuard(event))
+                bool performTransition = true;
+                if constexpr (requires { CurrentTransition::ExecuteGuard(event); })
                 {
-                    std::cout << "woop performing transition:\n";
-                    std::cout << typeid(OriginState).name() << ", " << typeid(typename CurrentTransition::Event).name();
-                    std::cout << typeid(typename CurrentTransition::Guard).name() << "\n";
+                    performTransition = CurrentTransition::ExecuteGuard(event);
+                }
+                if (performTransition)
+                {
+                    if constexpr (requires { OriginState::on_exit(event); })
+                    {
+                        std::cout << "Performing on_exit of current state:" + std::string(typeid(OriginState).name()) + "\n";
+                        OriginState::on_exit(event);
+                    }
+                    if constexpr (requires { CurrentTransition::ExecuteAction(event); })
+                    {
+                        std::cout << "Performing action:\n";
+                        CurrentTransition::ExecuteAction(event);
+                    }
+                    if constexpr (requires { CurrentTransition::TargetState::on_entry(event); })
+                    {
+                        std::cout << "Performing on_entry of target state: " + std::string(typeid(typename CurrentTransition::TargetState).name()) + "\n";
+                        CurrentTransition::TargetState::on_entry(event);
+                    }
                     return;
                 }
             }

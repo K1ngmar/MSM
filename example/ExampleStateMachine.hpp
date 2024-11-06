@@ -49,13 +49,13 @@ namespace ExampleStateMachine
 	struct Booting : MSM::State<MSM::State_Type_Initial_Tag>
 	{
 		template<class Event>
-		void on_entry(const Event& evt)
+		static void on_entry(const Event& evt)
 		{
 			std::cout << "Booting entry" << std::endl;
 		}
 
 		template<class Event>
-		void on_exit(const Event& evt)
+		static void on_exit(const Event& evt)
 		{
 			std::cout << "Booting exit" << std::endl;
 		}
@@ -64,13 +64,13 @@ namespace ExampleStateMachine
 	struct Configuring : MSM::State<>
 	{
 		template<class Event>
-		void on_entry(const Event& evt)
+		static void on_entry(const Event& evt)
 		{
 			std::cout << "Idle entry" << std::endl;
 		}
 
 		template<class Event>
-		void on_exit(const Event& evt)
+		static void on_exit(const Event& evt)
 		{
 			std::cout << "Idle exit" << std::endl;
 		}
@@ -79,13 +79,13 @@ namespace ExampleStateMachine
 	struct Idle : MSM::State<>
 	{
 		template<class Event>
-		void on_entry(const Event& evt)
+		static void on_entry(const Event& evt)
 		{
 			std::cout << "Configuring entry" << std::endl;
 		}
 
 		template<class Event>
-		void on_exit(const Event& evt)
+		static void on_exit(const Event& evt)
 		{
 			std::cout << "Configuring exit" << std::endl;
 		}
@@ -94,13 +94,13 @@ namespace ExampleStateMachine
 	struct StartingGame : MSM::State<>
 	{
 		template<class Event>
-		void on_entry(const Event& evt)
+		static void on_entry(const Event& evt)
 		{
 			std::cout << "Starging game entry" << std::endl;
 		}
 
 		template<class Event>
-		void on_exit(const Event& evt)
+		static void on_exit(const Event& evt)
 		{
 			std::cout << "Starting game exit" << std::endl;
 		}
@@ -109,13 +109,13 @@ namespace ExampleStateMachine
 	struct Playing : MSM::State<>
 	{
 		template<class Event>
-		void on_entry(const Event& evt)
+		static void on_entry(const Event& evt)
 		{
 			std::cout << "Playing entry" << std::endl;
 		}
 
 		template<class Event>
-		void on_exit(const Event& evt)
+		static void on_exit(const Event& evt)
 		{
 			std::cout << "Playing exit" << std::endl;
 		}
@@ -124,13 +124,13 @@ namespace ExampleStateMachine
 	struct Paused : MSM::State<>
 	{
 		template<class Event>
-		void on_entry(const Event& evt)
+		static void on_entry(const Event& evt)
 		{
 			std::cout << "Pause entry" << std::endl;
 		}
 
 		template<class Event>
-		void on_exit(const Event& evt)
+		static void on_exit(const Event& evt)
 		{
 			std::cout << "Pause exit" << std::endl;
 		}
@@ -139,13 +139,13 @@ namespace ExampleStateMachine
 	struct ShuttingDown : MSM::State<MSM::State_Type_Final_Tag>
 	{
 		template<class Event>
-		void on_entry(const Event& evt)
+		static void on_entry(const Event& evt)
 		{
 			std::cout << "Exit game entry" << std::endl;
 		}
 
 		template<class Event>
-		void on_exit(const Event& evt)
+		static void on_exit(const Event& evt)
 		{
 			std::cout << "Exit game exit" << std::endl;
 		}
