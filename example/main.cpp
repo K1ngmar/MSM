@@ -11,17 +11,19 @@ int main(void)
 
 	fsm.ProcessEvent(ExampleStateMachine::LocalEvent::FinishedBooting());
 	std::this_thread::sleep_for(std::chrono::seconds(2));
-	// fsm.ProcessEvent(ExampleStateMachine::LocalEvent::FinishedConfiguring());
-	// std::this_thread::sleep_for(std::chrono::seconds(2));
-	// fsm.ProcessEvent(ExampleStateMachine::LocalEvent::StartGame());
-	// std::this_thread::sleep_for(std::chrono::seconds(2));
-	// fsm.ProcessEvent(ExampleStateMachine::LocalEvent::Pause());
-	// std::this_thread::sleep_for(std::chrono::seconds(2));
-	// fsm.ProcessEvent(ExampleStateMachine::LocalEvent::Unpause());
-	// std::this_thread::sleep_for(std::chrono::seconds(2));
-	// fsm.ProcessEvent(ExampleStateMachine::LocalEvent::ExitGame());
-	// std::this_thread::sleep_for(std::chrono::seconds(2));
-	// fsm.ProcessEvent(ExampleStateMachine::LocalEvent::ShutDown());
+	fsm.ProcessEvent(ExampleStateMachine::LocalEvent::FinishedConfiguring());
+	std::this_thread::sleep_for(std::chrono::seconds(2));
+	fsm.ProcessEvent(ExampleStateMachine::LocalEvent::StartGame());
+	std::this_thread::sleep_for(std::chrono::seconds(2));
+	fsm.ProcessEvent(ExampleStateMachine::LocalEvent::GameStarted());
+	std::this_thread::sleep_for(std::chrono::seconds(2));
+	fsm.ProcessEvent(ExampleStateMachine::LocalEvent::Pause());
+	std::this_thread::sleep_for(std::chrono::seconds(2));
+	fsm.ProcessEvent(ExampleStateMachine::LocalEvent::Unpause());
+	std::this_thread::sleep_for(std::chrono::seconds(2));
+	fsm.ProcessEvent(ExampleStateMachine::LocalEvent::ExitGame());
+	std::this_thread::sleep_for(std::chrono::seconds(2));
+	fsm.ProcessEvent(ExampleStateMachine::LocalEvent::ShutDown());
 
 	// fsm.Stop();
 

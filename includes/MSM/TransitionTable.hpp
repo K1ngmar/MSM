@@ -53,25 +53,6 @@ private:
 			throw std::runtime_error(std::string("Could not find id for state ") + typeid(State).name());
 		}
 	}
-
-	template <class Event, size_t N = 0>
-	static void ExecuteTransition(const size_t currentStateId, const Event& event)
-	{
-		using CurrentRow = std::tuple_element_t<N, AllRowsInATuple>;
-		if (N == currentStateId)
-		{
-			CurrentRow::ExecuteTransition(event);
-			return;
-		}
-		if constexpr (N + 1 < std::tuple_size_v<AllRowsInATuple>)
-		{
-			ExecuteTransition<Event, N + 1>(currentStateId, event);
-		}
-		else
-		{
-			throw std::runtime_error("Broken state machine, no state found for id: " + std::to_string(currentStateId));
-		}
-	}
 };
 
 } /* End of namespace MSM */

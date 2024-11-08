@@ -1,5 +1,5 @@
 
-#include "MSM/Backend/Utility/Utility.hpp"
+#include "MSM/Utility/Utility.hpp"
 
 #include <string>
 #include <iostream>
@@ -10,6 +10,7 @@
 #include <type_traits>
 #include <any>
 #include <exception>
+#include <memory>
 
 struct None
 {};
@@ -128,24 +129,34 @@ struct test
 };
 
 
+template <class DerivedType>
+class State
+{
+	using Derived = DerivedType;
+
+
+};
+
+struct Starting : public State<Starting>
+{
+	template<class Event>
+	void on_entry(const Event& e)
+	{
+		std::cout << "on entry Starting" << std::endl;
+	}
+};
+
+struct Idle : public State<Idle>
+{
+
+};
+
 int main(int argc, char** argv)
 {
     using transitionTable = TransitionTable<
-        Row<int, Transition<float, char, bool, double>,
-            	 Transition<float, char, char, None> >,
+        Row<Starting, Transition<float, Idle, bool, double> >,
         
-        Row<float, Transition<int, char, bool, double>,
-                   Transition<int, float, None, None>,
-				   Transition<float, char, bool, double>,
-                   Transition<float, float, None, None> >,
-
-		Row<double, Transition<int, char, bool, double>,
-                	Transition<int, float, None, char>,
-					Transition<char, float, None, char> >,
-		
-		Row<char, Transition<int, char, bool, double>,
-                	Transition<int, float, None, char>,
-					Transition<char, None, None, None> >
+        Row<Idle, Transition<int, Starting, bool, double> >
     >;
     transitionTable tt;
 
@@ -159,10 +170,11 @@ int main(int argc, char** argv)
     // PrintRows(tt.allRowsInATuple);
 
 
-    std::cout << "\n\nTransition gotten at runtime by current state and event:\n";
-	tt.get_transition<float>(argc);
+    // std::cout << "\n\nTransition gotten at runtime by current state and event:\n";
+	// tt.get_transition<float>(argc);
 
-    test<std::tuple<int,float> t(std::make_tuple<1, 1.0>);
+    // test<std::tuple<int,float> t(std::make_tuple<1, 1.0>);
+
 
     return 0;
 }

@@ -17,7 +17,18 @@ class StateMachine
 {
 private:
 
+	using TransitionTable = TransitionTableType;
+
     size_t currentStateId; /*!< -. */
+
+	/*!
+	 * @brief Tries to perform a transition based on the current state and incomming event.
+	*/
+	template <class Event, size_t N = 0>
+	void ExecuteTransition(const Event& event);
+
+	template <size_t RowIndex, size_t N = 0, class Event>
+	void ExecuteTransitionInRow(const Event& event);
 
 public:
 

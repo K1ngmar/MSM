@@ -66,13 +66,13 @@ namespace ExampleStateMachine
 		template<class Event>
 		static void on_entry(const Event& evt)
 		{
-			std::cout << "Idle entry" << std::endl;
+			std::cout << "Configuring entry" << std::endl;
 		}
 
 		template<class Event>
 		static void on_exit(const Event& evt)
 		{
-			std::cout << "Idle exit" << std::endl;
+			std::cout << "Configuring exit" << std::endl;
 		}
 	};
 
@@ -81,13 +81,13 @@ namespace ExampleStateMachine
 		template<class Event>
 		static void on_entry(const Event& evt)
 		{
-			std::cout << "Configuring entry" << std::endl;
+			std::cout << "Idle entry" << std::endl;
 		}
 
 		template<class Event>
 		static void on_exit(const Event& evt)
 		{
-			std::cout << "Configuring exit" << std::endl;
+			std::cout << "Idle exit" << std::endl;
 		}
 	};
 
@@ -157,8 +157,8 @@ namespace ExampleStateMachine
 
 	struct SaveGame
 	{
-		template <class OriginState, class Event>
-		void operator()(const OriginState& ost, const Event& evt)
+		template <class Event>
+		void operator()(const Event& evt)
 		{
 			std::cout << "Saving Game" << std::endl;
 		}
@@ -216,7 +216,7 @@ namespace ExampleStateMachine
 		>,
 
 		MSM::Row<Paused,
-			MSM::Transition<LocalEvent::Unpause, Paused, None, None>,
+			MSM::Transition<LocalEvent::Unpause, Playing, None, None>,
 			MSM::Transition<LocalEvent::ShutDown, ShuttingDown, SaveGame, None>
 		>
 	>;
