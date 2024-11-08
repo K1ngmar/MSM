@@ -37,6 +37,7 @@ void StateMachine<TransitionTableType>::ExecuteTransitionInRow(const Event& even
 		}
 		if (performTransition)
 		{
+			// TODO: only perform on exit when a target state is found.
 			if constexpr (requires { OriginState::on_exit(event); })
 			{
 				// std::cout << "Performing on_exit of current state:" + std::string(typeid(OriginState).name()) + "\n";
@@ -49,6 +50,7 @@ void StateMachine<TransitionTableType>::ExecuteTransitionInRow(const Event& even
 			}
 			if constexpr (requires { CurrentTransition::TargetState::on_entry(event); })
 			{
+				// TODO also switch to new state when no on entry is found but state does exist.
 				currentStateId = TransitionTableType::template GetStateId<typename CurrentTransition::TargetState>();
 				// std::cout << "Performing on_entry of target state: " + std::string(typeid(typename CurrentTransition::TargetState).name()) + "\n";
 				CurrentTransition::TargetState::on_entry(event);
