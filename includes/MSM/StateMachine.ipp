@@ -26,33 +26,37 @@ void StateMachine<TransitionTableType>::ExecuteTransitionInRow(const Event& even
 {
 	using Row = std::tuple_element_t<RowIndex, typename TransitionTable::AllRowsInATuple>;
 	using CurrentTransition = std::tuple_element_t<N, typename Row::Transitions>;
-	using OriginState = typename Row::OriginState;
+	using CurrentState = typename Row::OriginState;
 
 	if constexpr (std::is_same_v<typename CurrentTransition::Event, Event>)
 	{
 		bool performTransition = true;
+		// If there is no guard we always want to perform this transition.
 		if constexpr (requires { CurrentTransition::ExecuteGuard(event); })
 		{
 			performTransition = CurrentTransition::ExecuteGuard(event);
 		}
 		if (performTransition)
 		{
-			// TODO: only perform on exit when a target state is found.
-			if constexpr (requires { OriginState::on_exit(event); })
+			constexpr auto isTransitioningToOtherState = requires {sizeof(typename CurrentTransition::TargetState);};
+
+			if constexpr (requires { CurrentState::on_exit(event); } && isTransitioningToOtherState)
 			{
-				// std::cout << "Performing on_exit of current state:" + std::string(typeid(OriginState).name()) + "\n";
-				OriginState::on_exit(event);
+				CurrentState::on_exit(event);
 			}
+
 			if constexpr (requires { CurrentTransition::ExecuteAction(event); })
 			{
-				// std::cout << "Performing action:\n";
 				CurrentTransition::ExecuteAction(event);
 			}
-			if constexpr (requires { CurrentTransition::TargetState::on_entry(event); })
+
+			if constexpr (isTransitioningToOtherState)
 			{
-				// TODO also switch to new state when no on entry is found but state does exist.
 				currentStateId = TransitionTableType::template GetStateId<typename CurrentTransition::TargetState>();
-				// std::cout << "Performing on_entry of target state: " + std::string(typeid(typename CurrentTransition::TargetState).name()) + "\n";
+			}
+
+			if constexpr (requires { CurrentTransition::TargetState::on_entry(event); } && isTransitioningToOtherState)
+			{
 				CurrentTransition::TargetState::on_entry(event);
 			}
 			return;
@@ -66,7 +70,7 @@ void StateMachine<TransitionTableType>::ExecuteTransitionInRow(const Event& even
 	{
 		throw std::runtime_error(
 			std::string("Broken state machine, no transition implemented: ") +
-			typeid(OriginState).name() + ", " + typeid(Event).name()
+			typeid(CurrentState).name() + ", " + typeid(Event).name()
 		);
 	}
 }
@@ -79,7 +83,6 @@ void StateMachine<TransitionTableType>::ExecuteTransition(const Event& event)
 	if (N == currentStateId)
 	{
 		ExecuteTransitionInRow<N>(event);
-
 		return;
 	}
 	if constexpr (N + 1 < std::tuple_size_v<typename TransitionTable::AllRowsInATuple>)
