@@ -28,10 +28,28 @@ namespace MSM {
         using StateType = StateTypeTag;
     };
 
+    /*!
+     * @brief Executes the OnEntry function of state if it is defined.
+    */
     template<class State, class Event>
-    void ExecuteOnEntry(State& state, const Event& e)
+    void ExecuteOnEntryIfDefined(const Event& e)
     {
-        state.on_entry(e);
+        if constexpr (requires { State::OnEntry(e); })
+        {
+            State::OnEntry(e);
+        }
+    }
+
+    /*!
+     * @brief Executes the OnExit function of state if it is defined.
+    */
+    template<class State, class Event>
+    void ExecuteOnExitIfDefined(const Event& e)
+    {
+        if constexpr (requires { State::OnExit(e); })
+        {
+            State::OnExit(e);
+        }
     }
 
 } /* End namespace MSM */

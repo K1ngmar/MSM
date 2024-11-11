@@ -6,8 +6,14 @@
 
 namespace MSM {
 
-struct StateMachineStarting
-{};
+    namespace InternalEvents
+    {
+        /*!
+         * @brief Emitted when the statemachine is starting, to the on entry of the first state if it is defined.
+        */
+        struct StateMachineStarting
+        {};
+    }
 
 /*!
  * @brief The actual implementation of the statemachine based on the frontend transition table. 

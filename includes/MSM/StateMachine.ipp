@@ -8,9 +8,7 @@ void StateMachine<TransitionTableType>::Start()
     using InitialState = std::tuple_element_t<0, typename TransitionTableType::InitialStates>;
 
     currentStateId = TransitionTableType::template GetStateId<InitialState>();
-    InitialState i;
-    StateMachineStarting startingEvent;
-    MSM::ExecuteOnEntry(i, startingEvent);
+    ExecuteOnEntryIfDefined<InitialState>(InternalEvents::StateMachineStarting());
 };
 
 template<class TransitionTableType>
@@ -46,9 +44,9 @@ void StateMachine<TransitionTableType>::ExecuteTransitionInRow(const Event& even
 
 			constexpr auto isTransitioningToOtherState = IsNormalTransition<CurrentTransition>;
 
-			if constexpr (requires { CurrentState::on_exit(event); } && isTransitioningToOtherState)
+			if constexpr (isTransitioningToOtherState)
 			{
-				CurrentState::on_exit(event);
+				ExecuteOnExitIfDefined<CurrentState>(event);
 			}
 
 			if constexpr (TransitionHasAction<CurrentTransition>)
@@ -59,12 +57,10 @@ void StateMachine<TransitionTableType>::ExecuteTransitionInRow(const Event& even
 
 			if constexpr (isTransitioningToOtherState)
 			{
+				static_assert(requires {sizeof(typename CurrentTransition::TargetState);} );
 				currentStateId = TransitionTableType::template GetStateId<typename CurrentTransition::TargetState>();
-			}
 
-			if constexpr (requires { CurrentTransition::TargetState::on_entry(event); } && isTransitioningToOtherState)
-			{
-				CurrentTransition::TargetState::on_entry(event);
+				ExecuteOnEntryIfDefined<typename CurrentTransition::TargetState>(event);
 			}
 			return;
 		}
