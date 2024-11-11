@@ -27,6 +27,9 @@ private:
 	template <class Event, size_t N = 0>
 	void ExecuteTransition(const Event& event);
 
+    /*!
+     * @brief Tries to execute the transition in the selected row based on the event.
+    */
 	template <size_t RowIndex, size_t N = 0, class Event>
 	void ExecuteTransitionInRow(const Event& event);
 

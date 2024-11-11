@@ -32,21 +32,28 @@ void StateMachine<TransitionTableType>::ExecuteTransitionInRow(const Event& even
 	{
 		bool performTransition = true;
 		// If there is no guard we always want to perform this transition.
-		if constexpr (requires { CurrentTransition::ExecuteGuard(event); })
+		if constexpr (TransitionHasGuard<CurrentTransition>)
 		{
+			static_assert(requires { CurrentTransition::ExecuteGuard(event); });
 			performTransition = CurrentTransition::ExecuteGuard(event);
 		}
 		if (performTransition)
 		{
-			constexpr auto isTransitioningToOtherState = requires {sizeof(typename CurrentTransition::TargetState);};
+			if constexpr (IsEmptyTransition<CurrentTransition>)
+			{
+				return;
+			}
+
+			constexpr auto isTransitioningToOtherState = IsNormalTransition<CurrentTransition>;
 
 			if constexpr (requires { CurrentState::on_exit(event); } && isTransitioningToOtherState)
 			{
 				CurrentState::on_exit(event);
 			}
 
-			if constexpr (requires { CurrentTransition::ExecuteAction(event); })
+			if constexpr (TransitionHasAction<CurrentTransition>)
 			{
+				static_assert(requires { CurrentTransition::ExecuteAction(event); });
 				CurrentTransition::ExecuteAction(event);
 			}
 
