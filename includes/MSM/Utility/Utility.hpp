@@ -6,6 +6,9 @@
 
 namespace MSM { namespace Utility {
 
+    /*!
+     * @brief Concatonates a parameter pack of tuples or types into one big tuple.
+    */
     template<typename ...Ts>
     using tuple_cat_t = decltype(std::tuple_cat(std::declval<Ts>()...));
 
