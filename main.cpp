@@ -1,5 +1,6 @@
 
 #include "MSM/Utility/Utility.hpp"
+#include "MSM/Utility/UniqueTuple.hpp"
 
 #include <string>
 #include <iostream>
@@ -160,6 +161,11 @@ int main(int argc, char** argv)
     >;
     transitionTable tt;
 
+    using a = MSM::Utility::UniqueTuple<int, float, int, char, char, bool>;
+    std::cout << typeid(a).name() << std::endl;
+    std::cout << typeid(std::tuple<float, int, char, bool>).name() << std::endl;
+
+
 
     // std::cout << "All possible transitions for <int, float>:\n";
 	// transitionTable::GetPossibleTransitions<int, float>::possibleTransitions transitions;
@@ -174,6 +180,8 @@ int main(int argc, char** argv)
 	// tt.get_transition<float>(argc);
 
     // test<std::tuple<int,float> t(std::make_tuple<1, 1.0>);
+
+    
 
 
     return 0;
