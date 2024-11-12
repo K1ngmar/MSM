@@ -8,6 +8,10 @@
 
 namespace MSM { namespace Utility {
 
+/////////////////////////////////////////
+// Type is duplicate in parameter pack //
+/////////////////////////////////////////
+
     /*!
      * @brief Base definition, should not get used, the specializations overshadow this definition.
     */
@@ -34,41 +38,76 @@ namespace MSM { namespace Utility {
         >
     {};
 
+///////////////////////////////////////////////
+// Add type to tuple if not already in tuple //
+///////////////////////////////////////////////
+
     /*!
      * @brief Base definition, should not get used, the specializations overshadow this definition.
     */
-    template <typename Result, typename...>
+    template <typename UniqueTypes, typename...>
     struct AddTypesToTupleIfNotAlreadyInTuple;
 
     /*!
-     * @brief Final result definition.
+     * @brief Final UniqueTypes definition.
     */
-    template <typename... Result>
-    struct AddTypesToTupleIfNotAlreadyInTuple<std::tuple<Result...> >
+    template <typename... UniqueTypes>
+    struct AddTypesToTupleIfNotAlreadyInTuple<std::tuple<UniqueTypes...> >
     {
-        using type = std::tuple<Result...>;
+        using type = std::tuple<UniqueTypes...>;
     };
 
     /*!
-     * @brief Recursively adds types from TypesToAdd to Result.
-     * @tparam Result is specialized as a tuple so that we can have two parameter packs in the struct.
+     * @brief Recursively adds types from TypesToAdd to UniqueTypes.
+     * @tparam UniqueTypes is specialized as a tuple so that we can have two parameter packs in the struct.
     */
-    template <typename... Result, typename CurrentTypeToAdd, typename... TypesToAdd>
-    struct AddTypesToTupleIfNotAlreadyInTuple<std::tuple<Result...>, CurrentTypeToAdd, TypesToAdd...>
+    template <typename... UniqueTypes, typename CurrentTypeToAdd, typename... TypesToAdd>
+    struct AddTypesToTupleIfNotAlreadyInTuple<std::tuple<UniqueTypes...>, CurrentTypeToAdd, TypesToAdd...>
     {
         using type = std::conditional_t
         <
-            TypeIsDuplicateInParameterPack<CurrentTypeToAdd, Result...>::value,
-            typename AddTypesToTupleIfNotAlreadyInTuple<std::tuple<Result...>, TypesToAdd...>::type, // Skip CurrentTypeToAdd if it's a duplicate.
-            typename AddTypesToTupleIfNotAlreadyInTuple<std::tuple<Result..., CurrentTypeToAdd>, TypesToAdd...>::type // Include CurrentTypeToAdd.
+            TypeIsDuplicateInParameterPack<CurrentTypeToAdd, UniqueTypes...>::value,
+            typename AddTypesToTupleIfNotAlreadyInTuple<std::tuple<UniqueTypes...>, TypesToAdd...>::type, // Skip CurrentTypeToAdd if it's a duplicate.
+            typename AddTypesToTupleIfNotAlreadyInTuple<std::tuple<UniqueTypes..., CurrentTypeToAdd>, TypesToAdd...>::type // Include CurrentTypeToAdd.
         >;
     };
+
+
+/////////////////////////////
+// Unique tuple from types //
+/////////////////////////////
 
     /*!
      * @brief Filters Types for unique types and stores them in a tuple.
     */
     template <typename... Types>
     using UniqueTuple = typename AddTypesToTupleIfNotAlreadyInTuple<std::tuple<>, Types...>::type;
+
+
+/////////////////////////////
+// Unique tuple from tuple //
+/////////////////////////////
+
+    /*!
+     * @brief Base definition, should not get used, the specializations overshadow this definition.
+    */
+    template <typename Type>
+    struct UnqiqueTupleFromTuple__Impl;
+
+    /*!
+     * @brief Filters Types in the tuple for unique types and stores them in a tuple.
+    */
+    template <typename... Types>
+    struct UnqiqueTupleFromTuple__Impl<std::tuple<Types...> >
+    {
+        using type = UniqueTuple<Types...>;
+    };
+
+    /*!
+     * @brief Filters Types in the tuple for unique types and stores them in a tuple.
+    */
+    template <typename Tuple>
+    using UniqueTupleFromTuple = typename UnqiqueTupleFromTuple__Impl<Tuple>::type;
 
 
 } /* End of namespace Utility */

@@ -165,6 +165,9 @@ int main(int argc, char** argv)
     std::cout << typeid(a).name() << std::endl;
     std::cout << typeid(std::tuple<float, int, char, bool>).name() << std::endl;
 
+    using b = MSM::Utility::UniqueTupleFromTuple<std::tuple<int, float, int, char, char, bool>>;
+    std::cout << typeid(b).name() << std::endl;
+
 
 
     // std::cout << "All possible transitions for <int, float>:\n";

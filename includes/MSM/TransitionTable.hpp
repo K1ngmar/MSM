@@ -2,6 +2,7 @@
 
 #include "MSM/State.hpp"
 #include "MSM/Utility/Utility.hpp"
+#include "MSM/Utility/UniqueTuple.hpp"
 
 #include <tuple>
 #include <typeinfo>
@@ -29,13 +30,26 @@ private:
 	/*!
 	 * @brief Gets all states with the State_Type_Initial_Tag and stores them in a tuple.
 	*/
-	using InitialStates = MSM::Utility::tuple_cat_t<
-		std::conditional_t<
+	using InitialStates = MSM::Utility::tuple_cat_t
+	<
+		std::conditional_t
+		<
 			std::is_same_v<typename Rows::OriginState::StateType, MSM::State_Type_Initial_Tag>,
 			std::tuple<typename Rows::OriginState>,
 			std::tuple<>
 		>...
 	>;
+
+	/*!
+	 * @brief A tuple containing all possible events that are defined in the transition table for this statemachine.
+	*/
+	using AllPossibleEvents = MSM::Utility::UniqueTupleFromTuple
+		<
+			MSM::Utility::tuple_cat_t
+			<
+				typename Rows::UniqueEventsInThisRow...
+			>
+		>;
 
 	/*!
 	 * @brief Gets the id of the state.

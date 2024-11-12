@@ -7,6 +7,9 @@ int main(void)
 {
     MSM::StateMachine<ExampleStateMachine::TransitionTable> fsm;
 
+	std::cout << typeid(ExampleStateMachine::TransitionTable::AllPossibleEvents).name() << std::endl;
+	return 1;
+
 	fsm.Start();
 
 	fsm.ProcessEvent(ExampleStateMachine::LocalEvent::FinishedBooting());
