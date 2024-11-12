@@ -37,6 +37,10 @@ private:
 		>...
 	>;
 
+	/*!
+	 * @brief Gets the id of the state.
+	 * @NOTE: The ids are assigned in the order that the rows are defined.
+	*/
 	template<class State, size_t N = 0>
 	static size_t GetStateId()
 	{

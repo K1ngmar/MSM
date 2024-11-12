@@ -18,6 +18,7 @@ int main(void)
 	fsm.ProcessEvent(ExampleStateMachine::LocalEvent::GameStarted());
 	std::this_thread::sleep_for(std::chrono::seconds(2));
 	fsm.ProcessEvent(ExampleStateMachine::LocalEvent::Pause());
+	fsm.Stop();
 	std::this_thread::sleep_for(std::chrono::seconds(2));
 	fsm.ProcessEvent(ExampleStateMachine::LocalEvent::Unpause());
 	std::this_thread::sleep_for(std::chrono::seconds(2));

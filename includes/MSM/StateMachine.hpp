@@ -9,9 +9,15 @@ namespace MSM {
     namespace InternalEvents
     {
         /*!
-         * @brief Emitted when the statemachine is starting, to the on entry of the first state if it is defined.
+         * @brief Emitted to the OnEntry of the initial states, if defined, when Start() is called on the statemachine.
         */
         struct StateMachineStarting
+        {};
+
+        /*!
+         * @brief Emitted to the OnExit of the current states, if defined, when Stop() is called on the statemachine.
+        */
+        struct StateMachineStopping
         {};
     }
 
@@ -26,6 +32,7 @@ private:
 	using TransitionTable = TransitionTableType;
 
     size_t currentStateId; /*!< -. */
+    bool isStatemachineRunning; /*!< -. */
 
 	/*!
 	 * @brief Tries to perform a transition based on the current state and incomming event.
@@ -39,7 +46,18 @@ private:
 	template <size_t RowIndex, size_t N = 0, class Event>
 	void ExecuteTransitionInRow(const Event& event);
 
+    /*!
+     * @brief -.
+    */
+    template <class Event, size_t N = 0>
+    void ExecuteOnExitOfCurrentStateIfDefined(const Event& event);
+
 public:
+
+    /*!
+     * @brief -.
+    */
+    bool IsStatemachineRunning() const;
 
     /*!
      * @brief -.
@@ -58,9 +76,10 @@ public:
 
     /*!
      * @brief Processes event, tries to execute transition defined in the transition table.
+     * @return True if the transition was enqueued and the statemachine was running.
     */
     template <class Event>
-    void ProcessEvent(const Event& e);
+    bool ProcessEvent(const Event& e);
 };
 
 

@@ -4,6 +4,7 @@ namespace MSM {
 template<class TransitionTableType>
 void StateMachine<TransitionTableType>::Start()
 {
+	isStatemachineRunning = true;
     // Orthogonal states are not yet supported, so we just just first found initial state.
     using InitialState = std::tuple_element_t<0, typename TransitionTableType::InitialStates>;
 
@@ -12,10 +13,48 @@ void StateMachine<TransitionTableType>::Start()
 };
 
 template<class TransitionTableType>
-template <class Event>
-void StateMachine<TransitionTableType>::ProcessEvent(const Event& event)
+void StateMachine<TransitionTableType>::Stop()
 {
-    ExecuteTransition(event);
+	isStatemachineRunning = false;
+	ExecuteOnExitOfCurrentStateIfDefined(InternalEvents::StateMachineStopping());
+}
+
+template<class TransitionTableType>
+template <class Event, size_t N>
+void StateMachine<TransitionTableType>::ExecuteOnExitOfCurrentStateIfDefined(const Event& event)
+{
+	using CurrentState = std::tuple_element_t<N, typename TransitionTable::AllRowsInATuple>::OriginState;
+	if (N == currentStateId)
+	{
+		ExecuteOnExitIfDefined<CurrentState>(event);
+		return;
+	}
+	if constexpr (N + 1 < std::tuple_size_v<typename TransitionTable::AllRowsInATuple>)
+	{
+		ExecuteOnExitOfCurrentStateIfDefined<Event, N + 1>(event);
+	}
+	else
+	{
+		isStatemachineRunning = false;
+		throw std::runtime_error("Broken state machine, no state found for id: " + std::to_string(currentStateId));
+	}
+}
+
+template<class TransitionTableType>
+bool StateMachine<TransitionTableType>::IsStatemachineRunning() const
+{
+	return isStatemachineRunning;
+}
+
+template<class TransitionTableType>
+template <class Event>
+bool StateMachine<TransitionTableType>::ProcessEvent(const Event& event)
+{
+	if (!isStatemachineRunning) {
+		return false;
+	}
+	ExecuteTransition(event);
+	return true;
 }
 
 template<class TransitionTableType>
@@ -71,6 +110,7 @@ void StateMachine<TransitionTableType>::ExecuteTransitionInRow(const Event& even
 	}
 	else
 	{
+		isStatemachineRunning = false;
 		throw std::runtime_error(
 			std::string("Broken state machine, no transition implemented: ") +
 			typeid(CurrentState).name() + ", " + typeid(Event).name()
@@ -94,6 +134,7 @@ void StateMachine<TransitionTableType>::ExecuteTransition(const Event& event)
 	}
 	else
 	{
+		isStatemachineRunning = false;
 		throw std::runtime_error("Broken state machine, no state found for id: " + std::to_string(currentStateId));
 	}
 }
