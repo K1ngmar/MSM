@@ -2,7 +2,7 @@
 
 #include "MSM/State.hpp"
 #include "MSM/Utility/Utility.hpp"
-#include "MSM/Utility/UniqueTuple.hpp"
+#include "MSM/Utility/TupTility.hpp"
 
 #include <tuple>
 #include <typeinfo>
@@ -44,12 +44,12 @@ private:
 	 * @brief A tuple containing all possible events that are defined in the transition table for this statemachine.
 	*/
 	using AllPossibleEvents = MSM::Utility::UniqueTupleFromTuple
+	<
+		MSM::Utility::tuple_cat_t
 		<
-			MSM::Utility::tuple_cat_t
-			<
-				typename Rows::UniqueEventsInThisRow...
-			>
-		>;
+			typename Rows::UniqueEventsInThisRow...
+		>
+	>;
 
 	/*!
 	 * @brief Gets the id of the state.

@@ -1,8 +1,8 @@
 #pragma once
 
 #include "MSM/TransitionTable.hpp"
-
 #include "MSM/State.hpp"
+#include "MSM/Utility/TupTility.hpp"
 
 namespace MSM {
 
@@ -31,14 +31,32 @@ private:
 
 	using TransitionTable = TransitionTableType;
 
-    size_t currentStateId; /*!< -. */
-    bool isStatemachineRunning; /*!< -. */
+    size_t currentStateId = 0; /*!< -. */
+    bool isStatemachineRunning = false; /*!< -. */
+    bool isExecutingTransition = false; /*!< -. */
+
+    /*!
+	 * All events added with ProcessEvent, get temporarily stored here.
+	 * If a transition is ongoing it will check what transition should be used next.
+	*/
+	MSM::Utility::ArrayOfQueueOfType<typename TransitionTable::AllPossibleEvents> eventBuffer;
+
+	/*!
+	 * Stores the order of the events to process next.
+	 * Stored in this queue is the id of the next event to process from the eventBuffer.
+	*/
+	std::queue<size_t> eventToProcessOrder;
 
 	/*!
 	 * @brief Tries to perform a transition based on the current state and incomming event.
 	*/
 	template <class Event, size_t N = 0>
 	void ExecuteTransition(const Event& event);
+
+    /*!
+     * @brief Tries to execute all enqueued transitions.
+    */
+    void ExecuteTransitionsFromQueue();
 
     /*!
      * @brief Tries to execute the transition in the selected row based on the event.
@@ -52,15 +70,28 @@ private:
     template <class Event, size_t N = 0>
     void ExecuteOnExitOfCurrentStateIfDefined(const Event& event);
 
+    /*!
+     * @brief Clears all enqueued events.
+    */
+    void ClearQueue();
+
 public:
 
     /*!
+     * @brief Checks wheter there are any events enqueued.
+     * @return
+    */
+    bool IsEventEnqueued() const;
+
+    /*!
      * @brief -.
+     * @return
     */
     bool IsStatemachineRunning() const;
 
     /*!
      * @brief -.
+     * @return
     */
     size_t CurrentStateId() const;
 

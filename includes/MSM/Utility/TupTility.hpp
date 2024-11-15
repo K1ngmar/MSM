@@ -5,6 +5,7 @@
 
 #include <tuple>
 #include <type_traits>
+#include <queue>
 
 namespace MSM { namespace Utility {
 
@@ -109,6 +110,43 @@ namespace MSM { namespace Utility {
     template <typename Tuple>
     using UniqueTupleFromTuple = typename UnqiqueTupleFromTuple__Impl<Tuple>::type;
 
+///////////////////////////////////////
+// Array of vector of types in tuple //
+///////////////////////////////////////
+
+    template <typename Type>
+    struct TupleOfQueueOfType__Impl;
+
+    /*!
+     * @brief Filters Types in the tuple for unique types and stores them in a tuple.
+    */
+    template <typename... Types>
+    struct TupleOfQueueOfType__Impl<std::tuple<Types...> >
+    {
+        using type = MSM::Utility::tuple_cat_t
+        <
+            std::tuple<std::queue<Types> >...
+        >;
+    };
+
+    template <typename Type>
+    struct ArrayOfQueueOfType__Impl;
+
+    /*!
+     * @brief Filters Types in the tuple for unique types and stores them in a tuple.
+    */
+    template <typename... Types>
+    struct ArrayOfQueueOfType__Impl<std::tuple<Types...> >
+    {
+        using type = std::array<Types...>;
+    };
+
+    /*!
+     * @brief Creates an array, with queues of each type in the original tuple.
+     *        ie. given tuple<int, float> will result in array<queue<int>, queue<float>>.
+    */
+    template <typename Tuple>
+    using ArrayOfQueueOfType = typename ArrayOfQueueOfType__Impl<Tuple>::type;
 
 } /* End of namespace Utility */
 

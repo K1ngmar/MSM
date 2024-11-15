@@ -1,7 +1,7 @@
 
 namespace MSM {
 
-template<class TransitionTableType>
+template <class TransitionTableType>
 void StateMachine<TransitionTableType>::Start()
 {
 	isStatemachineRunning = true;
@@ -9,17 +9,27 @@ void StateMachine<TransitionTableType>::Start()
     using InitialState = std::tuple_element_t<0, typename TransitionTableType::InitialStates>;
 
     currentStateId = TransitionTableType::template GetStateId<InitialState>();
+	isExecutingTransition = true;
     ExecuteOnEntryIfDefined<InitialState>(InternalEvents::StateMachineStarting());
+	isExecutingTransition = false;
+	if (IsEventEnqueued())
+	{
+		ExecuteTransitionsFromQueue();
+	}
 };
 
-template<class TransitionTableType>
+template <class TransitionTableType>
 void StateMachine<TransitionTableType>::Stop()
 {
+	// Stop statemachine so that no new events can be processed.
 	isStatemachineRunning = false;
+	ClearQueue();
+
 	ExecuteOnExitOfCurrentStateIfDefined(InternalEvents::StateMachineStopping());
 }
 
-template<class TransitionTableType>
+
+template <class TransitionTableType>
 template <class Event, size_t N>
 void StateMachine<TransitionTableType>::ExecuteOnExitOfCurrentStateIfDefined(const Event& event)
 {
@@ -40,24 +50,79 @@ void StateMachine<TransitionTableType>::ExecuteOnExitOfCurrentStateIfDefined(con
 	}
 }
 
-template<class TransitionTableType>
+template <class TransitionTableType>
+void StateMachine<TransitionTableType>::ClearQueue()
+{
+	// for (auto& buffer : eventBuffer)
+	// {
+	// 	buffer.clear();
+	// }
+	// eventToProcessOrder.clear();
+}
+
+template <class TransitionTableType>
 bool StateMachine<TransitionTableType>::IsStatemachineRunning() const
 {
 	return isStatemachineRunning;
 }
 
-template<class TransitionTableType>
+template <class TransitionTableType>
 template <class Event>
 bool StateMachine<TransitionTableType>::ProcessEvent(const Event& event)
 {
 	if (!isStatemachineRunning) {
 		return false;
 	}
-	ExecuteTransition(event);
+	bool eventBuffered = false;
+	for (size_t eventBufferId = 0; eventBufferId < eventBuffer.size(); eventBufferId++)
+	{
+		auto& eventQueue = eventBuffer.at(eventBufferId);
+		if constexpr (requires {eventQueue.emplace(event); })
+		{
+			eventQueue.emplace(event);
+			eventToProcessOrder.emplace(eventBufferId);
+			eventBuffered = true;
+			break;
+		}
+	}
+	if (!eventBuffered)
+	{
+		throw std::runtime_error(
+			"Could not buffer event, it does not seme to be defined in the statemachine. "
+			"For event with type: " + std::string(typeid(Event).name())
+		);
+	}
+	if (!isExecutingTransition)
+	{
+		ExecuteTransitionsFromQueue();
+	}
 	return true;
 }
 
-template<class TransitionTableType>
+template <class TransitionTableType>
+void StateMachine<TransitionTableType>::ExecuteTransitionsFromQueue()
+{
+	if (isExecutingTransition)
+	{
+		return;
+	}
+	isExecutingTransition = true;
+	while (IsEventEnqueued() && isStatemachineRunning)
+	{
+		const auto nextEventToProcessId = eventToProcessOrder.front();
+		eventToProcessOrder.pop();
+
+		const auto& currentEventBuffer = eventBuffer.at(nextEventToProcessId);
+		const auto& eventToExecute = currentEventBuffer.front();
+
+		ExecuteTransition(eventToExecute);
+
+		currentEventBuffer.pop();
+	}
+	isExecutingTransition = false;
+}
+
+template <class TransitionTableType>
 template <size_t RowIndex, size_t N, class Event>
 void StateMachine<TransitionTableType>::ExecuteTransitionInRow(const Event& event)
 {
@@ -118,7 +183,7 @@ void StateMachine<TransitionTableType>::ExecuteTransitionInRow(const Event& even
 	}
 }
 
-template<class TransitionTableType>
+template <class TransitionTableType>
 template <class Event, size_t N>
 void StateMachine<TransitionTableType>::ExecuteTransition(const Event& event)
 {
