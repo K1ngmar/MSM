@@ -4,6 +4,8 @@
 #include "MSM/State.hpp"
 #include "MSM/Utility/TupTility.hpp"
 
+#include <functional>
+
 namespace MSM {
 
     namespace InternalEvents
@@ -39,13 +41,7 @@ private:
 	 * All events added with ProcessEvent, get temporarily stored here.
 	 * If a transition is ongoing it will check what transition should be used next.
 	*/
-	MSM::Utility::ArrayOfQueueOfType<typename TransitionTable::AllPossibleEvents> eventBuffer;
-
-	/*!
-	 * Stores the order of the events to process next.
-	 * Stored in this queue is the id of the next event to process from the eventBuffer.
-	*/
-	std::queue<size_t> eventToProcessOrder;
+	MSM::Utility::DeuqeOfVaraintOfTupleType<typename TransitionTable::AllPossibleEvents> eventBuffer;
 
 	/*!
 	 * @brief Tries to perform a transition based on the current state and incomming event.

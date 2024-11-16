@@ -19,6 +19,12 @@ void StateMachine<TransitionTableType>::Start()
 };
 
 template <class TransitionTableType>
+bool StateMachine<TransitionTableType>::IsEventEnqueued() const
+{
+	return !eventBuffer.empty();
+}
+
+template <class TransitionTableType>
 void StateMachine<TransitionTableType>::Stop()
 {
 	// Stop statemachine so that no new events can be processed.
@@ -53,11 +59,7 @@ void StateMachine<TransitionTableType>::ExecuteOnExitOfCurrentStateIfDefined(con
 template <class TransitionTableType>
 void StateMachine<TransitionTableType>::ClearQueue()
 {
-	// for (auto& buffer : eventBuffer)
-	// {
-	// 	buffer.clear();
-	// }
-	// eventToProcessOrder.clear();
+	eventBuffer.clear();
 }
 
 template <class TransitionTableType>
@@ -73,25 +75,9 @@ bool StateMachine<TransitionTableType>::ProcessEvent(const Event& event)
 	if (!isStatemachineRunning) {
 		return false;
 	}
-	bool eventBuffered = false;
-	for (size_t eventBufferId = 0; eventBufferId < eventBuffer.size(); eventBufferId++)
-	{
-		auto& eventQueue = eventBuffer.at(eventBufferId);
-		if constexpr (requires {eventQueue.emplace(event); })
-		{
-			eventQueue.emplace(event);
-			eventToProcessOrder.emplace(eventBufferId);
-			eventBuffered = true;
-			break;
-		}
-	}
-	if (!eventBuffered)
-	{
-		throw std::runtime_error(
-			"Could not buffer event, it does not seme to be defined in the statemachine. "
-			"For event with type: " + std::string(typeid(Event).name())
-		);
-	}
+
+	eventBuffer.emplace_back(event);
+
 	if (!isExecutingTransition)
 	{
 		ExecuteTransitionsFromQueue();
@@ -109,15 +95,14 @@ void StateMachine<TransitionTableType>::ExecuteTransitionsFromQueue()
 	isExecutingTransition = true;
 	while (IsEventEnqueued() && isStatemachineRunning)
 	{
-		const auto nextEventToProcessId = eventToProcessOrder.front();
-		eventToProcessOrder.pop();
-
-		const auto& currentEventBuffer = eventBuffer.at(nextEventToProcessId);
-		const auto& eventToExecute = currentEventBuffer.front();
-
-		ExecuteTransition(eventToExecute);
-
-		currentEventBuffer.pop();
+		std::visit(
+			[&](auto&& event)
+			{
+				ExecuteTransition(event);
+			},
+			eventBuffer.front()
+		);
+		eventBuffer.pop_front();
 	}
 	isExecutingTransition = false;
 }

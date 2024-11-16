@@ -5,7 +5,8 @@
 
 #include <tuple>
 #include <type_traits>
-#include <queue>
+#include <deque>
+#include <variant>
 
 namespace MSM { namespace Utility {
 
@@ -111,42 +112,53 @@ namespace MSM { namespace Utility {
     using UniqueTupleFromTuple = typename UnqiqueTupleFromTuple__Impl<Tuple>::type;
 
 ///////////////////////////////////////
-// Array of vector of types in tuple //
+// Deque of vector of types in tuple //
 ///////////////////////////////////////
 
     template <typename Type>
-    struct TupleOfQueueOfType__Impl;
+    struct TupleOfDequeOfType__Impl;
 
     /*!
      * @brief Filters Types in the tuple for unique types and stores them in a tuple.
     */
     template <typename... Types>
-    struct TupleOfQueueOfType__Impl<std::tuple<Types...> >
+    struct TupleOfDequeOfType__Impl<std::tuple<Types...> >
     {
         using type = MSM::Utility::tuple_cat_t
         <
-            std::tuple<std::queue<Types> >...
+            std::tuple<std::deque<Types> >...
         >;
     };
 
+    /*!
+     * @brief Creates an tuple, with Deques of each type in the original tuple.
+     *        ie. given tuple<int, float> will result in tuple<deque<int>, deque<float>>.
+    */
+    template <typename Tuple>
+    using TupleOfDequeOfType = typename TupleOfDequeOfType__Impl<Tuple>::type;
+
+////////////////////////////////////////
+// Deque of variant of types in tuple //
+////////////////////////////////////////
+
     template <typename Type>
-    struct ArrayOfQueueOfType__Impl;
+    struct DequeOfVariantOfTupleTypes__Impl;
 
     /*!
      * @brief Filters Types in the tuple for unique types and stores them in a tuple.
     */
     template <typename... Types>
-    struct ArrayOfQueueOfType__Impl<std::tuple<Types...> >
+    struct DequeOfVariantOfTupleTypes__Impl<std::tuple<Types...> >
     {
-        using type = std::array<Types...>;
+        using type = std::deque<std::variant<Types...>>;
     };
 
     /*!
-     * @brief Creates an array, with queues of each type in the original tuple.
-     *        ie. given tuple<int, float> will result in array<queue<int>, queue<float>>.
+     * @brief Creates an tuple, with Deques of each type in the original tuple.
+     *        ie. given tuple<int, float> will result in deque<std::variant<int, float>>.
     */
     template <typename Tuple>
-    using ArrayOfQueueOfType = typename ArrayOfQueueOfType__Impl<Tuple>::type;
+    using DeuqeOfVaraintOfTupleType = typename DequeOfVariantOfTupleTypes__Impl<Tuple>::type;
 
 } /* End of namespace Utility */
 
